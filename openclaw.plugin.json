@@ -1,0 +1,12 @@
+{
+  "id": "now4real",
+  "name": "Now4real",
+  "description": "Now4real channel plugin for OpenClaw",
+  "kind": "channel",
+  "channels": ["now4real"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

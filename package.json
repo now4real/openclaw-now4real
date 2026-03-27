@@ -1,0 +1,29 @@
+{
+  "name": "@lightstreamer/openclaw-now4real",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MVP Now4real channel plugin for OpenClaw",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "openclaw": {
+    "extensions": ["./index.ts"],
+    "setupEntry": "./setup-entry.ts",
+    "channel": {
+      "id": "now4real",
+      "label": "Now4real",
+      "blurb": "Connect OpenClaw to a Now4real pagechat via the chatbot webhook."
+    }
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.2-beta.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}
