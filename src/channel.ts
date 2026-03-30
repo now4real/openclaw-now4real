@@ -1,62 +1,101 @@
+/**
+ * Now4real Channel Plugin
+ */
 import {
   createChatChannelPlugin,
   createChannelPluginBase,
 } from "openclaw/plugin-sdk/core";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
+import { now4realApi, initClient } from "./client.js";
 
-import {
-  inspectNow4realAccount,
-  resolveNow4realAccount,
-} from "./config.js";
-import type { ResolvedNow4realAccount } from "./types.js";
+export type ResolvedAccount = {
+  accountId: string | null;
+  apiKey: string;
+  siteKey: string;
+  webhookSecret: string | undefined;
+  allowFrom: string[];
+  dmPolicy: string | undefined;
+};
 
 function resolveAccount(
   cfg: OpenClawConfig,
   accountId?: string | null,
-): ResolvedNow4realAccount {
-  return resolveNow4realAccount(cfg, accountId);
+): ResolvedAccount {
+  const section = (cfg.channels as Record<string, any>)?.["now4real"];
+  const apiKey = section?.apiKey;
+  const siteKey = section?.siteKey;
+
+  if (!apiKey) throw new Error("now4real: apiKey is required");
+  if (!siteKey) throw new Error("now4real: siteKey is required");
+
+  // Initialize client with resolved config
+  initClient({ apiKey, siteKey });
+
+  return {
+    accountId: accountId ?? null,
+    apiKey,
+    siteKey,
+    webhookSecret: section?.webhookSecret,
+    allowFrom: section?.allowFrom ?? [],
+    dmPolicy: section?.dmSecurity,
+  };
 }
 
-export const now4realPlugin = createChatChannelPlugin<ResolvedNow4realAccount>({
+export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   base: createChannelPluginBase({
     id: "now4real",
     setup: {
       resolveAccount,
-      inspectAccount(cfg) {
-        return inspectNow4realAccount(cfg);
+      inspectAccount(cfg, accountId) {
+        const section = (cfg.channels as Record<string, any>)?.["now4real"];
+        return {
+          enabled: Boolean(section?.apiKey && section?.siteKey),
+          configured: Boolean(section?.apiKey && section?.siteKey),
+          tokenStatus: section?.apiKey ? "available" : "missing",
+        };
       },
     },
   }),
 
-  capabilities: {
-    chatTypes: ["group", "thread"],
-    reactions: false,
-    threads: true,
-    media: false,
-    nativeCommands: false,
-    blockStreaming: true,
-  },
-
-  streaming: {
-    blockStreamingCoalesceDefaults: {
-      minChars: 900,
-      idleMs: 600,
+  // DM security: who can message the bot
+  security: {
+    dm: {
+      channelKey: "now4real",
+      resolvePolicy: (account) => account.dmPolicy,
+      resolveAllowFrom: (account) => account.allowFrom,
+      defaultPolicy: "allowlist",
     },
   },
 
-  groups: {
-    resolveRequireMention: (account) => account.groupRequireMention,
+  // Pairing: approval flow for new DM contacts
+  pairing: {
+    text: {
+      idLabel: "Now4real user ID",
+      message: "Send this code to verify your identity:",
+      notify: async ({ target, code }) => {
+        await now4realApi.sendDm(target, `Pairing code: ${code}`);
+      },
+    },
   },
 
-  threading: {
-    topLevelReplyToMode: "reply",
-  },
+  // Threading: how replies are delivered
+  threading: { topLevelReplyToMode: "reply" },
 
+  // Outbound: send messages to the platform
   outbound: {
     attachedResults: {
-      sendText: async () => {
-        throw new Error(
-          "Now4real MVP only supports replies generated inside an active webhook request.",
+      sendText: async (params) => {
+        const result = await now4realApi.sendMessage(params.to, params.text);
+        return { messageId: result.id };
+      },
+    },
+    base: {
+      sendMedia: async (params) => {
+        // Now4real doesn't support direct media upload
+        // Send as text link instead
+        await now4realApi.sendMessage(
+          params.to,
+          `[Media: ${params.filePath}]`,
         );
       },
     },
