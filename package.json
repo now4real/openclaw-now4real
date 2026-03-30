@@ -6,7 +6,7 @@
     "extensions": ["./index.ts"],
     "setupEntry": "./setup-entry.ts",
     "channel": {
-      "id": "now4real",
+      "id": "channel-now4real",
       "label": "Now4real",
       "blurb": "Connect OpenClaw to Now4real pagechat."
     }
