@@ -12,7 +12,6 @@ export type ResolvedAccount = {
   accountId: string | null;
   apiKey: string;
   siteKey: string;
-  webhookSecret: string | undefined;
 };
 
 function resolveAccount(
@@ -32,8 +31,7 @@ function resolveAccount(
   return {
     accountId: accountId ?? null,
     apiKey,
-    siteKey,
-    webhookSecret: section?.webhookSecret,
+    siteKey
   };
 }
 
@@ -43,34 +41,18 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     config: {
       resolveAccount,
       listAccountIds: () => ["default"],
-    },
-    setup: {
-      resolveAccount,
-      listAccountIds(cfg) {
-        const section = (cfg.channels as Record<string, any>)?.["now4real"];
-        return section?.apiKey && section?.siteKey ? [null] : [];
-      },
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
+        const active = Boolean(section?.apiKey && section?.siteKey);
         return {
-          enabled: Boolean(section?.apiKey && section?.siteKey),
-          configured: Boolean(section?.apiKey && section?.siteKey),
+          enabled: active,
+          configured: active,
+          running: active,
           tokenStatus: section?.apiKey ? "available" : "missing",
         };
       },
-    },
+    }
   }),
-
-  // Pairing: approval flow for new DM contacts
-  pairing: {
-    text: {
-      idLabel: "Now4real user ID",
-      message: "Send this code to verify your identity:",
-      notify: async ({ target, code }) => {
-        await now4realApi.sendDm(target, `Pairing code: ${code}`);
-      },
-    },
-  },
 
   // Threading: how replies are delivered
   threading: { topLevelReplyToMode: "reply" },

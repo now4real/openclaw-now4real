@@ -9,28 +9,23 @@
   "configSchema": {
     "type": "object",
     "properties": {
-      "channels": {
+      "now4real": {
         "type": "object",
         "properties": {
-          "now4real": {
-            "type": "object",
-            "properties": {
-              "apiKey": {
-                "type": "string",
-                "description": "Now4real API key"
-              },
-              "siteKey": {
-                "type": "string",
-                "description": "Now4real site key"
-              },
-              "webhookSecret": {
-                "type": "string",
-                "description": "Webhook signature secret for verification"
-              }
-            },
-            "required": ["apiKey", "siteKey"]
+          "apiKey": {
+            "type": "string",
+            "description": "Now4real API key"
+          },
+          "siteKey": {
+            "type": "string",
+            "description": "Now4real site key"
+          },
+          "webhookSecret": {
+            "type": "string",
+            "description": "Webhook signature secret for verification"
           }
-        }
+        },
+        "required": ["apiKey", "siteKey"]
       }
     }
   }
