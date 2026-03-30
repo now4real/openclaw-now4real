@@ -4,7 +4,7 @@
   "name": "Now4real",
   "description": "Connect OpenClaw to Now4real pagechat via webhooks",
   "version": "1.0.0",
-  "config": {
+  "configSchema": {
     "type": "object",
     "properties": {
       "channels": {
