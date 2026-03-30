@@ -13,15 +13,13 @@ export type ResolvedAccount = {
   apiKey: string;
   siteKey: string;
   webhookSecret: string | undefined;
-  allowFrom: string[];
-  dmPolicy: string | undefined;
 };
 
 function resolveAccount(
   cfg: OpenClawConfig,
   accountId?: string | null,
 ): ResolvedAccount {
-  const section = (cfg.channels as Record<string, any>)?.["now4real"];
+  const section = (cfg.channels as Record<string, any>)?.["channel-now4real"];
   const apiKey = section?.apiKey;
   const siteKey = section?.siteKey;
 
@@ -36,8 +34,6 @@ function resolveAccount(
     apiKey,
     siteKey,
     webhookSecret: section?.webhookSecret,
-    allowFrom: section?.allowFrom ?? [],
-    dmPolicy: section?.dmSecurity,
   };
 }
 
@@ -47,11 +43,11 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     setup: {
       resolveAccount,
       listAccountIds(cfg) {
-        const section = (cfg.channels as Record<string, any>)?.["now4real"];
+        const section = (cfg.channels as Record<string, any>)?.["channel-now4real"];
         return section?.apiKey && section?.siteKey ? [null] : [];
       },
       inspectAccount(cfg, accountId) {
-        const section = (cfg.channels as Record<string, any>)?.["now4real"];
+        const section = (cfg.channels as Record<string, any>)?.["channel-now4real"];
         return {
           enabled: Boolean(section?.apiKey && section?.siteKey),
           configured: Boolean(section?.apiKey && section?.siteKey),
@@ -60,16 +56,6 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       },
     },
   }),
-
-  // DM security: who can message the bot
-  security: {
-    dm: {
-      channelKey: "now4real",
-      resolvePolicy: (account) => account.dmPolicy,
-      resolveAllowFrom: (account) => account.allowFrom,
-      defaultPolicy: "allowlist",
-    },
-  },
 
   // Pairing: approval flow for new DM contacts
   pairing: {

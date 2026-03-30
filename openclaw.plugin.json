@@ -12,7 +12,7 @@
       "channels": {
         "type": "object",
         "properties": {
-          "now4real": {
+          "channel-now4real": {
             "type": "object",
             "properties": {
               "apiKey": {
@@ -26,16 +26,6 @@
               "webhookSecret": {
                 "type": "string",
                 "description": "Webhook signature secret for verification"
-              },
-              "allowFrom": {
-                "type": "array",
-                "items": { "type": "string" },
-                "description": "Allowed user IDs for DM security"
-              },
-              "dmSecurity": {
-                "type": "string",
-                "enum": ["open", "allowlist"],
-                "description": "DM security policy"
               }
             },
             "required": ["apiKey", "siteKey"]
