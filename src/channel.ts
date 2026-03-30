@@ -43,7 +43,7 @@ function resolveAccount(
 
 export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   base: createChannelPluginBase({
-    id: "now4real",
+    id: "channel-now4real",
     setup: {
       resolveAccount,
       inspectAccount(cfg, accountId) {
