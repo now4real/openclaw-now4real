@@ -51,6 +51,20 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
           tokenStatus: section?.apiKey ? "available" : "missing",
         };
       },
+    },
+    setup: {
+      resolveAccount,
+      listAccountIds: () => ["default"],
+      inspectAccount(cfg, accountId) {
+        const section = (cfg.channels as Record<string, any>)?.["now4real"];
+        const active = Boolean(section?.apiKey && section?.siteKey);
+        return {
+          enabled: active,
+          configured: active,
+          running: active,
+          tokenStatus: section?.apiKey ? "available" : "missing",
+        };
+      },
     }
   }),
 
