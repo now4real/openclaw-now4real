@@ -48,7 +48,7 @@ export default defineChannelPluginEntry({
 
         // Get account config
         const account = now4realPlugin.setup!.resolveAccount(
-          api.getConfig(),
+          api.config(),
           undefined,
         );
 
