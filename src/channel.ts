@@ -46,6 +46,10 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     id: "channel-now4real",
     setup: {
       resolveAccount,
+      listAccountIds(cfg) {
+        const section = (cfg.channels as Record<string, any>)?.["now4real"];
+        return section?.apiKey && section?.siteKey ? [null] : [];
+      },
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         return {
