@@ -19,7 +19,7 @@ function resolveAccount(
   cfg: OpenClawConfig,
   accountId?: string | null,
 ): ResolvedAccount {
-  const section = (cfg.channels as Record<string, any>)?.["channel-now4real"];
+  const section = (cfg.channels as Record<string, any>)?.["now4real"];
   const apiKey = section?.apiKey;
   const siteKey = section?.siteKey;
 
@@ -39,15 +39,15 @@ function resolveAccount(
 
 export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   base: createChannelPluginBase({
-    id: "channel-now4real",
+    id: "now4real",
     setup: {
       resolveAccount,
       listAccountIds(cfg) {
-        const section = (cfg.channels as Record<string, any>)?.["channel-now4real"];
+        const section = (cfg.channels as Record<string, any>)?.["now4real"];
         return section?.apiKey && section?.siteKey ? [null] : [];
       },
       inspectAccount(cfg, accountId) {
-        const section = (cfg.channels as Record<string, any>)?.["channel-now4real"];
+        const section = (cfg.channels as Record<string, any>)?.["now4real"];
         return {
           enabled: Boolean(section?.apiKey && section?.siteKey),
           configured: Boolean(section?.apiKey && section?.siteKey),

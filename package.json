@@ -1,12 +1,12 @@
 {
-  "name": "@openclaw/channel-now4real",
+  "name": "@openclaw/now4real",
   "version": "1.0.0",
   "type": "module",
   "openclaw": {
     "extensions": ["./index.ts"],
     "setupEntry": "./setup-entry.ts",
     "channel": {
-      "id": "channel-now4real",
+      "id": "now4real",
       "label": "Now4real",
       "blurb": "Connect OpenClaw to Now4real pagechat."
     }
