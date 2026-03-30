@@ -69,7 +69,7 @@ export default defineChannelPluginEntry({
 
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.end("ok");
+          res.end(JSON.stringify({}));
         } catch (error) {
           res.statusCode = 500;
           res.end("Error processing webhook");
