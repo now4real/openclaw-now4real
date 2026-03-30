@@ -1,5 +1,6 @@
 {
   "$schema": "https://openclaw.ai/schemas/plugin.json",
+  "id": "channel-now4real",
   "name": "Now4real",
   "description": "Connect OpenClaw to Now4real pagechat via webhooks",
   "version": "1.0.0",
