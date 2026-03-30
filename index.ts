@@ -10,7 +10,7 @@ import {
 } from "./src/inbound.js";
 
 export default defineChannelPluginEntry({
-  id: "now4real",
+  id: "channel-now4real",
   name: "Now4real",
   description: "Connect OpenClaw to Now4real pagechat",
   plugin: now4realPlugin,
