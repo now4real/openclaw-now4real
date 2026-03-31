@@ -22,11 +22,13 @@
     }
   },
   "uiHints": {
-    "webhookAuthorization": {
-      "label": "Webhook Authorization",
-      "help": "Specify the value for the HTTP \"Authorization\" header to authenticate requests sent from the Now4real cloud to your webhook.",
-      "placeholder": "e.g. Bearer your-token-here",
-      "sensitive": true
+    "now4real": {
+      "webhookAuthorization": {
+        "label": "Webhook Authorization",
+        "help": "Specify the value for the HTTP \"Authorization\" header to authenticate requests sent from the Now4real cloud to your webhook.",
+        "placeholder": "e.g. Bearer your-token-here",
+        "sensitive": true
+      }
     }
   }
 }
