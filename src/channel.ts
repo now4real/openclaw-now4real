@@ -38,6 +38,14 @@ function resolveAccount(
 export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   base: createChannelPluginBase({
     id: "now4real",
+    capabilities: {
+      chatTypes: ["group"],
+      polls: false,
+      reactions: false,
+      threads: false,
+      media: false,
+      nativeCommands: false,
+    },
     config: {
       resolveAccount,
       listAccountIds: () => ["default"],
