@@ -85,7 +85,23 @@ export async function handleNow4realInbound(
     ctx: finalizeInboundContext(ctxPayload),
     cfg: api,
     dispatcher: {
-      markComplete: () => console.log('markComplete')
-    }
+      sendToolResult: (_payload) => {
+        console.log('sendToolResult');
+        return true;
+      },
+      sendBlockReply: (_payload) => {
+        console.log('sendBlockReply');
+        return true;
+      },
+
+      // TODO: implement sendFinalReply to update the original message with the assistant's reply
+      sendFinalReply: (payload) => {
+        return true;
+      },
+      waitForIdle: () => Promise.resolve(),
+      //getQueuedCounts: () => ({ ...queuedCounts }),
+      //getFailedCounts: () => ({ ...failedCounts }),
+      markComplete: () => console.log('markComplete'),
+    },
   });
 }
