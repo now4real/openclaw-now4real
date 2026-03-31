@@ -65,11 +65,11 @@ export default defineChannelPluginEntry({
 
         try {
           const event = parseWebhookPayload(body);
-          await handleNow4realInbound(api, event, account);
+          const finalReply = await handleNow4realInbound(api, event, account);
 
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify({}));
+          res.end(finalReply ? JSON.stringify(finalReply) : JSON.stringify({}));
         } catch (error) {
           console.error("Error handling Now4real webhook:", error);
           res.statusCode = 500;

@@ -60,7 +60,7 @@ export async function handleNow4realInbound(
   api: any,
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
-): Promise<void> {
+): Promise<unknown> {
 
   // Construct context payload for OpenClaw
   const ctxPayload = {
@@ -81,6 +81,8 @@ export async function handleNow4realInbound(
   };
 
   // Dispatch message to OpenClaw
+  let finalReplyPayload: unknown;
+
   await dispatchInboundMessage({
     ctx: finalizeInboundContext(ctxPayload),
     cfg: api,
@@ -93,9 +95,8 @@ export async function handleNow4realInbound(
         console.log('sendBlockReply');
         return true;
       },
-
-      // TODO: implement sendFinalReply to update the original message with the assistant's reply
       sendFinalReply: (payload) => {
+        finalReplyPayload = payload;
         return true;
       },
       waitForIdle: () => Promise.resolve(),
@@ -104,4 +105,21 @@ export async function handleNow4realInbound(
       markComplete: () => console.log('markComplete'),
     },
   });
+
+  if (!finalReplyPayload) return null;
+
+  const p = finalReplyPayload as any;
+  const content: string = p.text ?? p.content ?? p.body ?? "";
+
+  return {
+    user: {
+      displayName: account.botDisplayName ?? "Chat Bot"
+    },
+    newMessages: [
+      {
+        content,
+        replyMessageId: event.newMessage.id,
+      },
+    ],
+  };
 }
