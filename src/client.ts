@@ -39,15 +39,6 @@ class Now4realClient {
     });
   }
 
-  async sendDm(userId: string, message: string): Promise<SendMessageResult> {
-    return this.request<SendMessageResult>("/dm/send", {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: userId,
-        message,
-      }),
-    });
-  }
 }
 
 let clientInstance: Now4realClient | null = null;
@@ -67,6 +58,4 @@ export function getClient(): Now4realClient {
 export const now4realApi = {
   sendMessage: (pageId: string, message: string) =>
     getClient().sendMessage(pageId, message),
-  sendDm: (userId: string, message: string) =>
-    getClient().sendDm(userId, message),
 };
