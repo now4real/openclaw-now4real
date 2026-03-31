@@ -65,7 +65,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         return {
           enabled: active,
           configured: active,
-          running: active,
+          running: false,
           tokenStatus: active ? "available" : "missing",
         };
       },
