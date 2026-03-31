@@ -99,8 +99,8 @@ export async function handleNow4realInbound(
         return true;
       },
       waitForIdle: () => Promise.resolve(),
-      //getQueuedCounts: () => ({ ...queuedCounts }),
-      //getFailedCounts: () => ({ ...failedCounts }),
+      getQueuedCounts: () => ({ tool: 0, block: 0, final: 0 }),
+      getFailedCounts: () => ({ tool: 0, block: 0, final: 0 }),
       markComplete: () => console.log('markComplete'),
     },
   });
