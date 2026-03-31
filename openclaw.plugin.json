@@ -8,9 +8,11 @@
   "channels": ["now4real"],
   "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "now4real": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "webhookAuthorization": {
             "type": "string",
