@@ -65,10 +65,10 @@ export async function handleNow4realInbound(
   const ctxPayload = {
     Body: event.newMessage.content,
     From: event.newMessage.user.id,
-    To: event.context.page,
+    To: event.context.site+event.context.page,
     SenderName: event.newMessage.user.displayName,
     SenderId: event.newMessage.user.id,
-    SessionKey: `${event.context.page}:${event.newMessage.user.id}`,
+    SessionKey: `${event.context.site+event.context.page}:${event.newMessage.user.id}`,
     AccountId: account.accountId ?? undefined,
     Timestamp: new Date(event.newMessage.time).getTime(),
     Provider: "now4real",
