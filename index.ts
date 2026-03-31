@@ -7,6 +7,7 @@ import {
   parseWebhookPayload,
   handleNow4realInbound,
 } from "./src/inbound.js";
+import { timingSafeStringEqual } from "./src/utils.js";
 
 export default defineChannelPluginEntry({
   id: "now4real",
@@ -53,7 +54,7 @@ export default defineChannelPluginEntry({
 
         // Verify webhook authorization
         const authorization = req.headers["authorization"] as string ?? "";
-        if (authorization !== account.webhookAuthorization) {
+        if (!timingSafeStringEqual(authorization, account.webhookAuthorization)) {
           res.statusCode = 401;
           res.end("Invalid signature");
           return true;
