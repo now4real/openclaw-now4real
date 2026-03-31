@@ -71,6 +71,7 @@ export default defineChannelPluginEntry({
           res.setHeader("Content-Type", "application/json");
           res.end(JSON.stringify({}));
         } catch (error) {
+          console.error("Error handling Now4real webhook:", error);
           res.statusCode = 500;
           res.end("Error processing webhook");
         }
