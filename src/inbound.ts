@@ -113,7 +113,8 @@ export async function handleNow4realInbound(
 
   return {
     user: {
-      displayName: account.botDisplayName ?? "Chat Bot"
+      displayName: account.botDisplayName ?? "ChatBot",
+      displayIcon: account.botDisplayIcon ?? undefined,
     },
     newMessages: [
       {

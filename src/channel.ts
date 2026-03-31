@@ -11,6 +11,8 @@ import { now4realApi, initClient } from "./client.js";
 export type ResolvedAccount = {
   accountId: string | null;
   webhookAuthorization: string;
+  botDisplayName: string | null;
+  botDisplayIcon: string | null;
 };
 
 function resolveAccount(
@@ -28,6 +30,8 @@ function resolveAccount(
   return {
     accountId: accountId ?? null,
     webhookAuthorization,
+    botDisplayName: section?.botDisplayName ?? null,
+    botDisplayIcon: section?.botDisplayIcon ?? null,
   };
 }
 

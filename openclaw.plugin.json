@@ -15,6 +15,14 @@
           "webhookAuthorization": {
             "type": "string",
             "description": "Webhook authorization secret for verification"
+          },
+          "botDisplayName": {
+            "type": "string",
+            "description": "Display name shown for the bot when replying"
+          },
+          "botDisplayIcon": {
+            "type": "string",
+            "description": "URL of the icon shown for the bot when replying"
           }
         },
         "required": ["webhookAuthorization"]
@@ -27,6 +35,16 @@
         "help": "Specify the value for the HTTP \"Authorization\" header to authenticate requests sent from the Now4real cloud to your webhook.",
         "placeholder": "e.g. Bearer your-token-here",
         "sensitive": true
+      },
+      "now4real.botDisplayName": {
+        "label": "Bot Display Name",
+        "help": "The name shown for the bot when it replies in the chat.",
+        "placeholder": "e.g. Support Bot"
+      },
+      "now4real.botDisplayIcon": {
+        "label": "Bot Display Icon",
+        "help": "URL of the avatar image shown for the bot when it replies in the chat.",
+        "placeholder": "e.g. https://example.com/bot-icon.png"
       }
   }
 }
