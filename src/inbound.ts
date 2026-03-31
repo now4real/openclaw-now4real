@@ -3,6 +3,7 @@
  */
 import { createHmac, timingSafeEqual } from "crypto";
 import type { ResolvedAccount } from "./channel.js";
+import { finalizeInboundContext } from "openclaw/plugin-sdk/reply-runtime";
 
 export interface Now4realWebhookEvent {
   event: string;
@@ -48,16 +49,21 @@ export async function handleNow4realInbound(
     return;
   }
 
+  // Construct context payload for OpenClaw
+  const ctxPayload = {
+    Body: event.message,
+    From: event.user_id,
+    To: event.page_id,
+    SenderName: event.user_name,
+    SenderId: event.user_id,
+    SessionKey: `${event.page_id}:${event.user_id}`,
+    AccountId: account.accountId ?? undefined,
+    Timestamp: event.timestamp,
+    Provider: "now4real",
+  };
+
   // Dispatch message to OpenClaw
   await api.dispatchInboundMessage({
-    channelId: "now4real",
-    conversationId: `now4real_${event.page_id}_${event.user_id}`,
-    senderId: event.user_id,
-    senderName: event.user_name,
-    text: event.message,
-    timestamp: event.timestamp ?? Date.now(),
-    metadata: {
-      pageId: event.page_id,
-    },
+    ctx: finalizeInboundContext(ctxPayload),
   });
 }
