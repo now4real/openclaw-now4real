@@ -12,7 +12,6 @@ Channel plugin to connect OpenClaw to Now4real pagechat.
 ├── tsconfig.json
 └── src/
     ├── channel.ts            # Plugin via createChatChannelPlugin
-    ├── channel.test.ts       # Tests
     ├── client.ts             # Now4real API client
     └── inbound.ts            # Webhook handler
 ```
@@ -44,9 +43,3 @@ Add to your `openclaw.json`:
 3. The plugin verifies the authorization header and forwards the event to OpenClaw
 4. OpenClaw processes and replies via `outbound.sendText`
 5. The reply appears in the pagechat
-
-## Test
-
-```bash
-pnpm test
-```
