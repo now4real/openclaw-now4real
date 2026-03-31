@@ -20,8 +20,10 @@ function resolveAccount(
   accountId?: string | null,
 ): ResolvedAccount {
   const section = (cfg.channels as Record<string, any>)?.["now4real"];
+  const enabled = section?.enabled;
   const webhookAuthorization = section?.webhookAuthorization;
 
+  if (!enabled) throw new Error("now4real channel disabled");
   if (!webhookAuthorization) throw new Error("now4real: webhookAuthorization is required");
 
   // Initialize client
@@ -51,12 +53,13 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       listAccountIds: () => ["default"],
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
-        const active = Boolean(section?.webhookAuthorization);
+        const enabled = Boolean(section?.enabled);
+        const configured = Boolean(section?.webhookAuthorization);
         return {
-          enabled: active,
-          configured: active,
-          running: active,
-          tokenStatus: active ? "available" : "missing",
+          enabled: enabled,
+          configured: configured,
+          running: false,
+          tokenStatus: configured ? "available" : "missing",
         };
       },
     },
@@ -65,12 +68,13 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       listAccountIds: () => ["default"],
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
-        const active = Boolean(section?.webhookAuthorization);
+        const enabled = Boolean(section?.enabled);
+        const configured = Boolean(section?.webhookAuthorization);
         return {
-          enabled: active,
-          configured: active,
+          enabled: enabled,
+          configured: configured,
           running: false,
-          tokenStatus: active ? "available" : "missing",
+          tokenStatus: configured ? "available" : "missing",
         };
       },
     }
