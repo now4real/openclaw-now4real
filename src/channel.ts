@@ -10,8 +10,7 @@ import { now4realApi, initClient } from "./client.js";
 
 export type ResolvedAccount = {
   accountId: string | null;
-  apiKey: string;
-  siteKey: string;
+  webhookAuthorization: string;
 };
 
 function resolveAccount(
@@ -19,19 +18,16 @@ function resolveAccount(
   accountId?: string | null,
 ): ResolvedAccount {
   const section = (cfg.channels as Record<string, any>)?.["now4real"];
-  const apiKey = section?.apiKey;
-  const siteKey = section?.siteKey;
+  const webhookAuthorization = section?.webhookAuthorization;
 
-  if (!apiKey) throw new Error("now4real: apiKey is required");
-  if (!siteKey) throw new Error("now4real: siteKey is required");
+  if (!webhookAuthorization) throw new Error("now4real: webhookAuthorization is required");
 
-  // Initialize client with resolved config
-  initClient({ apiKey, siteKey });
+  // Initialize client
+  initClient();
 
   return {
     accountId: accountId ?? null,
-    apiKey,
-    siteKey
+    webhookAuthorization,
   };
 }
 
@@ -51,12 +47,12 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       listAccountIds: () => ["default"],
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
-        const active = Boolean(section?.apiKey && section?.siteKey);
+        const active = Boolean(section?.webhookAuthorization);
         return {
           enabled: active,
           configured: active,
           running: active,
-          tokenStatus: section?.apiKey ? "available" : "missing",
+          tokenStatus: active ? "available" : "missing",
         };
       },
     },
@@ -65,12 +61,12 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       listAccountIds: () => ["default"],
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
-        const active = Boolean(section?.apiKey && section?.siteKey);
+        const active = Boolean(section?.webhookAuthorization);
         return {
           enabled: active,
           configured: active,
           running: active,
-          tokenStatus: section?.apiKey ? "available" : "missing",
+          tokenStatus: active ? "available" : "missing",
         };
       },
     }

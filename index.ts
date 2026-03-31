@@ -5,7 +5,6 @@ import { defineChannelPluginEntry } from "openclaw/plugin-sdk/core";
 import { now4realPlugin } from "./src/channel.js";
 import {
   parseWebhookPayload,
-  verifyWebhookSignature,
   handleNow4realInbound,
 } from "./src/inbound.js";
 
@@ -52,12 +51,9 @@ export default defineChannelPluginEntry({
           undefined,
         );
 
-        // Verify webhook signature
-        const signature = req.headers["x-now4real-signature"] as string ?? "";
-        if (
-          account.webhookSecret &&
-          !verifyWebhookSignature(body, signature, account.webhookSecret)
-        ) {
+        // Verify webhook authorization
+        const authorization = req.headers["authorization"] as string ?? "";
+        if (authorization !== account.webhookAuthorization) {
           res.statusCode = 401;
           res.end("Invalid signature");
           return true;

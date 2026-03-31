@@ -24,13 +24,7 @@ Aggiungi al tuo `openclaw.yaml`:
 ```yaml
 channels:
   now4real:
-    apiKey: "your-now4real-api-key"
-    siteKey: "your-site-key"
-    webhookSecret: "optional-webhook-secret"
-    dmSecurity: "allowlist"
-    allowFrom:
-      - "user-id-1"
-      - "user-id-2"
+    webhookAuthorization: "your-webhook-authorization-secret"
 ```
 
 ## Setup Now4real
