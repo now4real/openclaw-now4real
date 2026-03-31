@@ -5,13 +5,30 @@ import { createHmac, timingSafeEqual } from "crypto";
 import type { ResolvedAccount } from "./channel.js";
 import { finalizeInboundContext } from "openclaw/plugin-sdk/reply-runtime";
 
+export interface Now4realWebhookUser {
+  id: string;
+  displayName: string;
+  jwtSub: string;
+  authProvider: string;
+}
+
+export interface Now4realWebhookMessage {
+  id: string;
+  time: string;
+  user: Now4realWebhookUser;
+  replyMessageId?: string;
+  content: string;
+}
+
 export interface Now4realWebhookEvent {
-  event: string;
-  page_id: string;
-  user_id: string;
-  user_name: string;
-  message: string;
-  timestamp?: number;
+  context: {
+    site: string;
+    page: string;
+  };
+  chat: {
+    messages: Now4realWebhookMessage[];
+  };
+  newMessage: Now4realWebhookMessage;
 }
 
 export function verifyWebhookSignature(
@@ -44,22 +61,22 @@ export async function handleNow4realInbound(
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
 ): Promise<void> {
-  // Only handle message events
-  if (event.event !== "message") {
-    return;
-  }
-
   // Construct context payload for OpenClaw
   const ctxPayload = {
-    Body: event.message,
-    From: event.user_id,
-    To: event.page_id,
-    SenderName: event.user_name,
-    SenderId: event.user_id,
-    SessionKey: `${event.page_id}:${event.user_id}`,
+    Body: event.newMessage.content,
+    From: event.newMessage.user.id,
+    To: event.context.page,
+    SenderName: event.newMessage.user.displayName,
+    SenderId: event.newMessage.user.id,
+    SessionKey: `${event.context.page}:${event.newMessage.user.id}`,
     AccountId: account.accountId ?? undefined,
-    Timestamp: event.timestamp,
+    Timestamp: new Date(event.newMessage.time).getTime(),
     Provider: "now4real",
+    InboundHistory: event.chat.messages.map((m) => ({
+      sender: m.user.displayName,
+      body: m.content,
+      timestamp: new Date(m.time).getTime(),
+    })),
   };
 
   // Dispatch message to OpenClaw
