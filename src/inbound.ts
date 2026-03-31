@@ -3,7 +3,7 @@
  */
 import { createHmac, timingSafeEqual } from "crypto";
 import type { ResolvedAccount } from "./channel.js";
-import { finalizeInboundContext } from "openclaw/plugin-sdk/reply-runtime";
+import { finalizeInboundContext, dispatchInboundMessage } from "openclaw/plugin-sdk/reply-runtime";
 
 export interface Now4realWebhookUser {
   id: string;
@@ -61,6 +61,7 @@ export async function handleNow4realInbound(
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
 ): Promise<void> {
+
   // Construct context payload for OpenClaw
   const ctxPayload = {
     Body: event.newMessage.content,
@@ -80,7 +81,11 @@ export async function handleNow4realInbound(
   };
 
   // Dispatch message to OpenClaw
-  await api.dispatchInboundMessage({
+  await dispatchInboundMessage({
     ctx: finalizeInboundContext(ctxPayload),
+    cfg: api,
+    dispatcher: {
+      markComplete: () => console.log('markComplete')
+    }
   });
 }
