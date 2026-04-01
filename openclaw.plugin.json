@@ -25,11 +25,11 @@
             "type": "string",
             "description": "Webhook authorization secret for verification"
           },
-          "botDisplayName": {
+          "openClawDisplayName": {
             "type": "string",
             "description": "Display name shown for the bot when replying"
           },
-          "botDisplayIcon": {
+          "openClawDisplayIcon": {
             "type": "string",
             "description": "URL of the icon shown for the bot when replying"
           }
@@ -47,13 +47,13 @@
           "placeholder": "e.g. Bearer your-token-here",
           "sensitive": true
         },
-        "botDisplayName": {
-          "label": "OpenClaw Display Name",
+        "openClawDisplayName": {
+          "label": "Bot Display Name",
           "help": "The name shown for the bot when it replies in the chat.",
           "placeholder": "e.g. Support Bot"
         },
-        "botDisplayIcon": {
-          "label": "OpenClaw Display Icon",
+        "openClawDisplayIcon": {
+          "label": "Bot Display Icon",
           "help": "URL of the avatar image shown for the bot when it replies in the chat.",
           "placeholder": "e.g. https://example.com/bot-icon.png"
         }
