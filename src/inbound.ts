@@ -69,7 +69,7 @@ export async function handleNow4realInbound(
 ): Promise<unknown> {
   const site = String(event.context.site ?? "").trim();
   const page = String(event.context.page ?? "").trim();
-  const channelContextId = `${site}::${page}`;
+  const channelContextId = `${site}${page}`;
   const sessionKey = `agent:main:now4real:channel:${channelContextId}`;
 
   // Construct context payload for OpenClaw
