@@ -48,12 +48,12 @@
           "sensitive": true
         },
         "botDisplayName": {
-          "label": "Bot Display Name",
+          "label": "OpenClaw Display Name",
           "help": "The name shown for the bot when it replies in the chat.",
           "placeholder": "e.g. Support Bot"
         },
         "botDisplayIcon": {
-          "label": "Bot Display Icon",
+          "label": "OpenClaw Display Icon",
           "help": "URL of the avatar image shown for the bot when it replies in the chat.",
           "placeholder": "e.g. https://example.com/bot-icon.png"
         }
