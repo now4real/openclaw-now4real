@@ -1,45 +1,105 @@
 # OpenClaw Now4real Channel
 
-Channel plugin to connect OpenClaw to Now4real pagechat.
+Channel plugin to connect OpenClaw to Now4real pagechat via webhook + outbound API.
 
 ## Structure
 
 ```
-├── package.json              # openclaw.channel metadata
-├── openclaw.plugin.json      # Manifest with config schema
-├── index.ts                  # Main entry point
-├── setup-entry.ts            # Onboarding entry
+├── package.json              # plugin metadata
+├── openclaw.plugin.json      # plugin manifest and config schema
+├── index.ts                  # plugin entry point and webhook route
+├── setup-entry.ts            # onboarding entry
 ├── tsconfig.json
 └── src/
-    ├── channel.ts            # Plugin via createChatChannelPlugin
-    ├── client.ts             # Now4real API client
-    └── inbound.ts            # Webhook handler
+    ├── channel.ts            # createChatChannelPlugin and outbound handlers
+    ├── client.ts             # Now4real REST client
+    ├── inbound.ts            # webhook payload parsing and inbound dispatch
+    └── utils.ts              # timing-safe string compare helper
 ```
 
 ## Configuration
 
-Add to your `openclaw.json`:
+Add this to your OpenClaw config.
 
 ```json
 {
   "channels": {
     "now4real": {
-      "webhookAuthorization": "your-webhook-authorization-secret"
+      "enabled": true,
+      "webhookAuthorization": "Bearer your-webhook-secret",
+      "now4realApiKey": "Bearer your-now4real-api-key",
+      "openClawDisplayName": "Support Bot",
+      "openClawDisplayIcon": "https://example.com/bot-icon.png"
     }
   }
 }
 ```
 
-## Now4real Setup
+Required fields:
+- webhookAuthorization
+- now4realApiKey
 
-1. Go to Now4real Dashboard → Webhooks
-2. Add webhook URL: `https://your-openclaw-server.com/now4real/webhook`
-3. Set the webhook authorization secret in your configuration
+Optional fields:
+- enabled
+- openClawDisplayName
+- openClawDisplayIcon
 
-## Flow
+## Webhook Setup
 
-1. User sends a message in the Now4real pagechat
-2. Now4real sends a webhook POST to `/now4real/webhook`
-3. The plugin verifies the authorization header and forwards the event to OpenClaw
-4. OpenClaw processes and replies via `outbound.sendText`
-5. The reply appears in the pagechat
+1. Open Now4real dashboard -> Webhooks.
+2. Set webhook URL to `https://your-openclaw-server.com/now4real/webhook`.
+3. Configure the same authorization value in both Now4real webhook settings and `webhookAuthorization`.
+
+## Outbound API Payloads
+
+The plugin now sends `context` and `user` for both message and typing APIs.
+
+sendMessage payload:
+
+```json
+{
+  "context": {
+    "site": "now4real.test",
+    "page": "/chatbot"
+  },
+  "user": {
+    "displayName": "Support Bot",
+    "displayIcon": "https://example.com/bot-icon.png"
+  },
+  "newMessages": [
+    {
+      "content": "Hello from OpenClaw",
+      "replyMessageId": "optional-message-id"
+    }
+  ]
+}
+```
+
+setTyping payload:
+
+```json
+{
+  "context": {
+    "site": "now4real.test",
+    "page": "/chatbot"
+  },
+  "user": {
+    "displayName": "Support Bot",
+    "displayIcon": "https://example.com/bot-icon.png"
+  },
+  "typing": true,
+  "timeout": 2
+}
+```
+
+`timeout` is optional and used only when `typing` is `true`.
+
+## Runtime Flow
+
+1. A visitor sends a message in Now4real pagechat.
+2. Now4real sends webhook event data to `/now4real/webhook`.
+3. The plugin validates the `Authorization` header against `webhookAuthorization`.
+4. The event is dispatched to OpenClaw.
+5. On reply start, plugin calls typing API with `context` + bot `user`.
+6. On reply completion, plugin turns typing off.
+7. Final agent response is sent via Now4real message API with `context`, `user`, and `newMessages`.
