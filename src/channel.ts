@@ -11,6 +11,7 @@ import { now4realApi, initClient } from "./client.js";
 export type ResolvedAccount = {
   accountId: string | null;
   webhookAuthorization: string;
+  now4realApiKey: string;
   openClawDisplayName: string | null;
   openClawDisplayIcon: string | null;
 };
@@ -22,16 +23,21 @@ function resolveAccount(
   const section = (cfg.channels as Record<string, any>)?.["now4real"];
   const enabled = section?.enabled;
   const webhookAuthorization = section?.webhookAuthorization;
+  const now4realApiKey = section?.now4realApiKey;
 
   if (!enabled) throw new Error("now4real channel disabled");
   if (!webhookAuthorization) throw new Error("now4real: webhookAuthorization is required");
+  if (!now4realApiKey) {
+    throw new Error("now4real: now4realApiKey is required");
+  }
 
   // Initialize client
-  initClient();
+  initClient(now4realApiKey);
 
   return {
     accountId: accountId ?? null,
     webhookAuthorization,
+    now4realApiKey,
     openClawDisplayName: section?.openClawDisplayName ?? null,
     openClawDisplayIcon: section?.openClawDisplayIcon ?? null,
   };
@@ -54,7 +60,9 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         const enabled = Boolean(section?.enabled);
-        const configured = Boolean(section?.webhookAuthorization);
+        const configured = Boolean(
+          section?.webhookAuthorization && section?.now4realApiKey,
+        );
         return {
           enabled: enabled,
           configured: configured,
@@ -69,7 +77,9 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       inspectAccount(cfg, accountId) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         const enabled = Boolean(section?.enabled);
-        const configured = Boolean(section?.webhookAuthorization);
+        const configured = Boolean(
+          section?.webhookAuthorization && section?.now4realApiKey,
+        );
         return {
           enabled: enabled,
           configured: configured,
@@ -87,7 +97,16 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   outbound: {
     attachedResults: {
       sendText: async (params) => {
-        const result = await now4realApi.sendMessage(params.to, params.text);
+        const result = await now4realApi.sendMessage({
+          user: {
+            displayName: "Chat Bot",
+          },
+          newMessages: [
+            {
+              content: params.text,
+            },
+          ],
+        });
         return { messageId: result.id };
       },
     },
@@ -95,10 +114,16 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       sendMedia: async (params) => {
         // Now4real doesn't support direct media upload
         // Send as text link instead
-        await now4realApi.sendMessage(
-          params.to,
-          `[Media: ${params.filePath}]`,
-        );
+        await now4realApi.sendMessage({
+          user: {
+            displayName: "Chat Bot",
+          },
+          newMessages: [
+            {
+              content: `[Media: ${params.filePath}]`,
+            },
+          ],
+        });
       },
     },
   },

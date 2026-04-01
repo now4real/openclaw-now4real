@@ -25,6 +25,10 @@
             "type": "string",
             "description": "Webhook authorization secret for verification"
           },
+          "now4realApiKey": {
+            "type": "string",
+            "description": "Now4real API key used in the Authorization header for outbound API requests"
+          },
           "openClawDisplayName": {
             "type": "string",
             "description": "Display name shown for the bot when replying"
@@ -34,7 +38,7 @@
             "description": "URL of the icon shown for the bot when replying"
           }
         },
-        "required": ["webhookAuthorization"]
+        "required": ["webhookAuthorization", "now4realApiKey"]
       },
       "uiHints": {
         "enabled": {
@@ -45,6 +49,12 @@
           "label": "Webhook Authorization",
           "help": "Specify the value for the HTTP \"Authorization\" header to authenticate requests sent from the Now4real cloud to your webhook.",
           "placeholder": "e.g. Bearer your-token-here",
+          "sensitive": true
+        },
+        "now4realApiKey": {
+          "label": "Now4real API Key",
+          "help": "Specify the API key value used in the HTTP \"Authorization\" header when OpenClaw calls the Now4real API.",
+          "placeholder": "e.g. Bearer your-now4real-api-key",
           "sensitive": true
         },
         "openClawDisplayName": {

@@ -31,6 +31,11 @@ export interface Now4realWebhookEvent {
   newMessage: Now4realWebhookMessage;
 }
 
+export type InboundReplyLifecycleHooks = {
+  onAgentReplyStart?: () => void | Promise<void>;
+  onAgentReplyDone?: () => void | Promise<void>;
+};
+
 export function verifyWebhookSignature(
   payload: string,
   signature: string,
@@ -60,6 +65,7 @@ export async function handleNow4realInbound(
   api: any,
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
+  hooks?: InboundReplyLifecycleHooks,
 ): Promise<unknown> {
   const site = String(event.context.site ?? "").trim();
   const page = String(event.context.page ?? "").trim();
@@ -86,20 +92,30 @@ export async function handleNow4realInbound(
 
   // Dispatch message to OpenClaw
   let finalReplyPayload: unknown;
+  let didSignalReplyStart = false;
+
+  const signalReplyStart = async () => {
+    if (didSignalReplyStart) return;
+    didSignalReplyStart = true;
+    await hooks?.onAgentReplyStart?.();
+  };
 
   await dispatchInboundMessage({
     ctx: finalizeInboundContext(ctxPayload),
     cfg: api,
     dispatcher: {
       sendToolResult: (_payload) => {
+        void signalReplyStart();
         console.log('sendToolResult');
         return true;
       },
       sendBlockReply: (_payload) => {
+        void signalReplyStart();
         console.log('sendBlockReply');
         return true;
       },
       sendFinalReply: (payload) => {
+        void signalReplyStart();
         finalReplyPayload = payload;
         return true;
       },
@@ -109,6 +125,8 @@ export async function handleNow4realInbound(
       markComplete: () => console.log('markComplete'),
     },
   });
+
+  await hooks?.onAgentReplyDone?.();
 
   if (!finalReplyPayload) return null;
 
