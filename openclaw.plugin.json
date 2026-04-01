@@ -9,11 +9,18 @@
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
-    "properties": {
-      "now4real": {
+    "properties": {}
+  },
+  "channelConfigs": {
+    "now4real": {
+      "schema": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable or disable the Now4real channel"
+          },
           "webhookAuthorization": {
             "type": "string",
             "description": "Webhook authorization secret for verification"
@@ -28,25 +35,29 @@
           }
         },
         "required": ["webhookAuthorization"]
+      },
+      "uiHints": {
+        "enabled": {
+          "label": "Enabled",
+          "help": "Turn the Now4real channel on or off."
+        },
+        "webhookAuthorization": {
+          "label": "Webhook Authorization",
+          "help": "Specify the value for the HTTP \"Authorization\" header to authenticate requests sent from the Now4real cloud to your webhook.",
+          "placeholder": "e.g. Bearer your-token-here",
+          "sensitive": true
+        },
+        "botDisplayName": {
+          "label": "Bot Display Name",
+          "help": "The name shown for the bot when it replies in the chat.",
+          "placeholder": "e.g. Support Bot"
+        },
+        "botDisplayIcon": {
+          "label": "Bot Display Icon",
+          "help": "URL of the avatar image shown for the bot when it replies in the chat.",
+          "placeholder": "e.g. https://example.com/bot-icon.png"
+        }
       }
     }
-  },
-  "uiHints": {
-      "now4real.webhookAuthorization": {
-        "label": "Webhook Authorization",
-        "help": "Specify the value for the HTTP \"Authorization\" header to authenticate requests sent from the Now4real cloud to your webhook.",
-        "placeholder": "e.g. Bearer your-token-here",
-        "sensitive": true
-      },
-      "now4real.botDisplayName": {
-        "label": "Bot Display Name",
-        "help": "The name shown for the bot when it replies in the chat.",
-        "placeholder": "e.g. Support Bot"
-      },
-      "now4real.botDisplayIcon": {
-        "label": "Bot Display Icon",
-        "help": "URL of the avatar image shown for the bot when it replies in the chat.",
-        "placeholder": "e.g. https://example.com/bot-icon.png"
-      }
   }
 }
