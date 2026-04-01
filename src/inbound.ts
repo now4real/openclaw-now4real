@@ -110,11 +110,12 @@ export async function handleNow4realInbound(
 
   const p = finalReplyPayload as any;
   const content: string = p.text ?? p.content ?? p.body ?? "";
+  const displayIcon = account.openClawDisplayIcon?.trim();
 
   return {
     user: {
       displayName: account.openClawDisplayName ?? "ChatBot",
-      displayIcon: account.openClawDisplayIcon ?? undefined,
+      ...(displayIcon ? { displayIcon } : {}),
     },
     newMessages: [
       {
