@@ -3,7 +3,11 @@
  */
 import { createHmac, timingSafeEqual } from "crypto";
 import type { ResolvedAccount } from "./channel.js";
-import { finalizeInboundContext, dispatchInboundMessage } from "openclaw/plugin-sdk/reply-runtime";
+import {
+  createReplyDispatcherWithTyping,
+  dispatchInboundMessage,
+  finalizeInboundContext,
+} from "openclaw/plugin-sdk/reply-runtime";
 
 export interface Now4realWebhookUser {
   id: string;
@@ -62,7 +66,7 @@ export function parseWebhookPayload(body: string): Now4realWebhookEvent {
 }
 
 export async function handleNow4realInbound(
-  api: any,
+  config: any,
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
   hooks?: InboundReplyLifecycleHooks,
@@ -92,41 +96,38 @@ export async function handleNow4realInbound(
 
   // Dispatch message to OpenClaw
   let finalReplyPayload: unknown;
-  let didSignalReplyStart = false;
+  let didSignalReplyDone = false;
 
-  const signalReplyStart = async () => {
-    if (didSignalReplyStart) return;
-    didSignalReplyStart = true;
-    await hooks?.onAgentReplyStart?.();
+  const signalReplyDone = async () => {
+    if (didSignalReplyDone) return;
+    didSignalReplyDone = true;
+    await hooks?.onAgentReplyDone?.();
   };
 
-  await dispatchInboundMessage({
-    ctx: finalizeInboundContext(ctxPayload),
-    cfg: api,
-    dispatcher: {
-      sendToolResult: (_payload) => {
-        void signalReplyStart();
-        console.log('sendToolResult');
-        return true;
-      },
-      sendBlockReply: (_payload) => {
-        void signalReplyStart();
-        console.log('sendBlockReply');
-        return true;
-      },
-      sendFinalReply: (payload) => {
-        void signalReplyStart();
+  const { dispatcher, replyOptions, markDispatchIdle, markRunComplete } = createReplyDispatcherWithTyping({
+    onReplyStart: () => hooks?.onAgentReplyStart?.(),
+    onIdle: () => {
+      void signalReplyDone();
+    },
+    deliver: async (payload: unknown, info: { kind: "tool" | "block" | "final" }) => {
+      if (info.kind === "final") {
         finalReplyPayload = payload;
-        return true;
-      },
-      waitForIdle: () => Promise.resolve(),
-      getQueuedCounts: () => ({ tool: 0, block: 0, final: 0 }),
-      getFailedCounts: () => ({ tool: 0, block: 0, final: 0 }),
-      markComplete: () => console.log('markComplete'),
+      }
     },
   });
 
-  await hooks?.onAgentReplyDone?.();
+  try {
+    await dispatchInboundMessage({
+      ctx: finalizeInboundContext(ctxPayload),
+      cfg: config,
+      dispatcher,
+      replyOptions,
+    });
+  } finally {
+    markRunComplete();
+    markDispatchIdle();
+    await signalReplyDone();
+  }
 
   if (!finalReplyPayload) return null;
 

@@ -13,7 +13,7 @@ import { timingSafeStringEqual } from "./src/utils.js";
 import { now4realApi } from "./src/client.js";
 
 async function processInboundAsyncReply(
-  api: any,
+  config: any,
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
 ): Promise<void> {
@@ -32,7 +32,7 @@ async function processInboundAsyncReply(
       ...(account.openClawDisplayIcon ? { displayIcon: account.openClawDisplayIcon } : {}),
     };
 
-    const finalReply = await handleNow4realInbound(api, event, account, {
+    const finalReply = await handleNow4realInbound(config, event, account, {
       onAgentReplyStart: async () => {
         try {
           await now4realApi.setTyping({
@@ -141,7 +141,7 @@ export default defineChannelPluginEntry({
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
           res.end(JSON.stringify({}));
-          void processInboundAsyncReply(api, event, account);
+          void processInboundAsyncReply(api.config, event, account);
         } catch (error) {
           console.error("Error handling Now4real webhook:", error);
           res.statusCode = 500;
