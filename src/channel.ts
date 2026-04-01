@@ -43,6 +43,29 @@ function resolveAccount(
   };
 }
 
+function resolveOutboundUser(params: any): { displayName: string; displayIcon?: string } {
+  const section = (params?.cfg?.channels as Record<string, any> | undefined)?.["now4real"]
+    ?? (params?.config?.channels as Record<string, any> | undefined)?.["now4real"];
+
+  const displayName = String(
+    params?.account?.openClawDisplayName
+      ?? params?.resolvedAccount?.openClawDisplayName
+      ?? section?.openClawDisplayName
+      ?? "Chat Bot",
+  ).trim() || "Chat Bot";
+
+  const rawIcon =
+    params?.account?.openClawDisplayIcon
+    ?? params?.resolvedAccount?.openClawDisplayIcon
+    ?? section?.openClawDisplayIcon;
+  const displayIcon = typeof rawIcon === "string" ? rawIcon.trim() : "";
+
+  return {
+    displayName,
+    ...(displayIcon ? { displayIcon } : {}),
+  };
+}
+
 export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   base: createChannelPluginBase({
     id: "now4real",
@@ -97,10 +120,9 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   outbound: {
     attachedResults: {
       sendText: async (params) => {
+        const user = resolveOutboundUser(params);
         const result = await now4realApi.sendMessage({
-          user: {
-            displayName: "Chat Bot",
-          },
+          user,
           newMessages: [
             {
               content: params.text,
@@ -112,12 +134,11 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     },
     base: {
       sendMedia: async (params) => {
+        const user = resolveOutboundUser(params);
         // Now4real doesn't support direct media upload
         // Send as text link instead
         await now4realApi.sendMessage({
-          user: {
-            displayName: "Chat Bot",
-          },
+          user,
           newMessages: [
             {
               content: `[Media: ${params.filePath}]`,
