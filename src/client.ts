@@ -3,8 +3,6 @@
  */
 
 export interface SendMessageResult {
-  id: string;
-  success: boolean;
 }
 
 export interface Now4realOutboundUser {
@@ -17,17 +15,29 @@ export interface Now4realOutboundMessage {
   replyMessageId?: string;
 }
 
+export interface Now4realContext {
+  site: string;
+  page: string;
+}
+
 export interface Now4realSendMessageBody {
+  context: Now4realContext;
   user: Now4realOutboundUser;
   newMessages: Now4realOutboundMessage[];
 }
 
+export interface Now4realSetTypingBody {
+  context: Now4realContext;
+  user: Now4realOutboundUser;
+  typing: boolean;
+  timeout?: number; // in seconds, optional, for how long the typing status should be active (only applicable when typing=true)
+}
+
 export interface SetTypingResult {
-  success: boolean;
 }
 
 class Now4realClient {
-  private baseUrl = "https://api.now4real.com/v1";
+  private baseUrl = "https://api.now4real.com/rest/v1";
   private authorization: string;
 
   constructor(authorization: string) {
@@ -55,19 +65,20 @@ class Now4realClient {
   }
 
   async sendMessage(payload: Now4realSendMessageBody): Promise<SendMessageResult> {
-    return this.request<SendMessageResult>("/pagechat/message", {
-      method: "POST",
+    console.log("Now4real sendMessage:", payload);
+
+    return this.request<SendMessageResult>("/chatbot/message", {
+      method: "PUT",
       body: JSON.stringify(payload),
     });
   }
 
-  async setTyping(pageId: string, typing: boolean): Promise<SetTypingResult> {
-    return this.request<SetTypingResult>("/pagechat/typing", {
+  async setTyping(payload: Now4realSetTypingBody): Promise<SetTypingResult> {
+    console.log("Now4real setTyping:", payload);
+
+    return this.request<SetTypingResult>("/chatbot/typing", {
       method: "POST",
-      body: JSON.stringify({
-        page_id: pageId,
-        typing,
-      }),
+      body: JSON.stringify(payload),
     });
   }
 
@@ -90,6 +101,6 @@ export function getClient(): Now4realClient {
 export const now4realApi = {
   sendMessage: (payload: Now4realSendMessageBody) =>
     getClient().sendMessage(payload),
-  setTyping: (pageId: string, typing: boolean) =>
-    getClient().setTyping(pageId, typing),
+  setTyping: (payload: Now4realSetTypingBody) =>
+    getClient().setTyping(payload),
 };

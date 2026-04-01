@@ -66,6 +66,31 @@ function resolveOutboundUser(params: any): { displayName: string; displayIcon?: 
   };
 }
 
+function resolveOutboundContext(params: any): { site: string; page: string } {
+  const fromExplicitContext = params?.context ?? params?.ctx?.context;
+  const site = String(fromExplicitContext?.site ?? "").trim();
+  const page = String(fromExplicitContext?.page ?? "").trim();
+  if (site && page) {
+    return { site, page };
+  }
+
+  // Fallback: To is built as `${site}${page}` in inbound flow.
+  const rawTo = String(params?.ctx?.To ?? params?.to ?? "").trim();
+  const firstSlash = rawTo.indexOf("/");
+  if (firstSlash > 0) {
+    const fallbackSite = rawTo.slice(0, firstSlash).trim();
+    const fallbackPage = rawTo.slice(firstSlash).trim();
+    if (fallbackSite && fallbackPage) {
+      return {
+        site: fallbackSite,
+        page: fallbackPage,
+      };
+    }
+  }
+
+  throw new Error("now4real: missing outbound context (site/page)");
+}
+
 export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   base: createChannelPluginBase({
     id: "now4real",
@@ -121,7 +146,9 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     attachedResults: {
       sendText: async (params) => {
         const user = resolveOutboundUser(params);
+        const context = resolveOutboundContext(params);
         const result = await now4realApi.sendMessage({
+          context,
           user,
           newMessages: [
             {
@@ -135,9 +162,11 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     base: {
       sendMedia: async (params) => {
         const user = resolveOutboundUser(params);
+        const context = resolveOutboundContext(params);
         // Now4real doesn't support direct media upload
         // Send as text link instead
         await now4realApi.sendMessage({
+          context,
           user,
           newMessages: [
             {

@@ -18,23 +18,40 @@ async function processInboundAsyncReply(
   account: ResolvedAccount,
 ): Promise<void> {
   try {
-    const pageId = String(event.context.page ?? "").trim();
-    if (!pageId) {
-      console.error("Now4real outbound skipped: missing page id in webhook context");
+    const context = {
+      site: String(event.context.site ?? "").trim(),
+      page: String(event.context.page ?? "").trim(),
+    };
+    if (!context.site || !context.page) {
+      console.error("Now4real outbound skipped: missing site/page in webhook context");
       return;
     }
+
+    const typingUser = {
+      displayName: String(account.openClawDisplayName ?? "Chat Bot"),
+      ...(account.openClawDisplayIcon ? { displayIcon: account.openClawDisplayIcon } : {}),
+    };
 
     const finalReply = await handleNow4realInbound(api, event, account, {
       onAgentReplyStart: async () => {
         try {
-          await now4realApi.setTyping(pageId, true);
+          await now4realApi.setTyping({
+            context,
+            user: typingUser,
+            typing: true,
+            //timeout: 2
+          });
         } catch (error) {
           console.error("Now4real typing on failed:", error);
         }
       },
       onAgentReplyDone: async () => {
         try {
-          await now4realApi.setTyping(pageId, false);
+          await now4realApi.setTyping({
+            context,
+            user: typingUser,
+            typing: false,
+          });
         } catch (error) {
           console.error("Now4real typing off failed:", error);
         }
@@ -51,6 +68,7 @@ async function processInboundAsyncReply(
     if (!firstContent) return;
 
     await now4realApi.sendMessage({
+      context,
       user: {
         displayName: String(reply?.user?.displayName ?? account.openClawDisplayName ?? "Chat Bot"),
         ...(reply?.user?.displayIcon ? { displayIcon: reply.user.displayIcon } : {}),
