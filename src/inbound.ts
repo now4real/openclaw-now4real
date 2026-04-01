@@ -61,15 +61,19 @@ export async function handleNow4realInbound(
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
 ): Promise<unknown> {
+  const site = String(event.context.site ?? "").trim();
+  const page = String(event.context.page ?? "").trim();
+  const channelContextId = `${site}::${page}`;
+  const sessionKey = `agent:main:now4real:channel:${channelContextId}`;
 
   // Construct context payload for OpenClaw
   const ctxPayload = {
     Body: event.newMessage.content,
     From: event.newMessage.user.id,
-    To: event.context.site+event.context.page,
+    To: channelContextId,
     SenderName: event.newMessage.user.displayName,
     SenderId: event.newMessage.user.id,
-    SessionKey: `${event.context.site+event.context.page}:${event.newMessage.user.id}`,
+    SessionKey: sessionKey,
     AccountId: account.accountId ?? undefined,
     Timestamp: new Date(event.newMessage.time).getTime(),
     Provider: "now4real",
