@@ -105,7 +105,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     config: {
       resolveAccount,
       listAccountIds: () => ["default"],
-      inspectAccount(cfg, accountId) {
+      inspectAccount(cfg) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         const enabled = Boolean(section?.enabled);
         const configured = Boolean(
@@ -122,7 +122,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     setup: {
       resolveAccount,
       listAccountIds: () => ["default"],
-      inspectAccount(cfg, accountId) {
+      inspectAccount(cfg) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         const enabled = Boolean(section?.enabled);
         const configured = Boolean(

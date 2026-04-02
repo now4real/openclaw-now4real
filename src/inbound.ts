@@ -1,7 +1,6 @@
 /**
  * Inbound webhook handler for Now4real
  */
-import { createHmac, timingSafeEqual } from "crypto";
 import type { ResolvedAccount } from "./channel.js";
 import {
   createReplyDispatcherWithTyping,
@@ -39,27 +38,6 @@ export type InboundReplyLifecycleHooks = {
   onAgentReplyStart?: () => void | Promise<void>;
   onAgentReplyDone?: () => void | Promise<void>;
 };
-
-export function verifyWebhookSignature(
-  payload: string,
-  signature: string,
-  secret: string,
-): boolean {
-  if (!secret) return true; // Skip if not configured
-
-  const expected = createHmac("sha256", secret)
-    .update(payload)
-    .digest("hex");
-
-  try {
-    return timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expected),
-    );
-  } catch {
-    return false;
-  }
-}
 
 export function parseWebhookPayload(body: string): Now4realWebhookEvent {
   return JSON.parse(body) as Now4realWebhookEvent;
