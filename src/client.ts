@@ -3,6 +3,7 @@
  */
 
 export interface SendMessageResult {
+  id?: string;
 }
 
 export interface Now4realOutboundUser {

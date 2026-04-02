@@ -3,7 +3,6 @@
  */
 import {
   createChatChannelPlugin,
-  createChannelPluginBase,
 } from "openclaw/plugin-sdk/core";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 import { now4realApi, initClient } from "./client.js";
@@ -92,8 +91,15 @@ function resolveOutboundContext(params: any): { site: string; page: string } {
 }
 
 export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
-  base: createChannelPluginBase({
+  base: {
     id: "now4real",
+    meta: {
+      id: "now4real",
+      label: "Now4real",
+      selectionLabel: "Now4real",
+      docsPath: "plugins/channels/now4real",
+      blurb: "Connect OpenClaw to Now4real pagechat.",
+    },
     capabilities: {
       chatTypes: ["group"],
       polls: false,
@@ -104,8 +110,8 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     },
     config: {
       resolveAccount,
-      listAccountIds: () => ["default"],
-      inspectAccount(cfg) {
+      listAccountIds: (_cfg: OpenClawConfig) => ["default"],
+      inspectAccount(cfg: OpenClawConfig, _accountId?: string | null) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         const enabled = Boolean(section?.enabled);
         const configured = Boolean(
@@ -120,23 +126,25 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       },
     },
     setup: {
-      resolveAccount,
-      listAccountIds: () => ["default"],
-      inspectAccount(cfg) {
-        const section = (cfg.channels as Record<string, any>)?.["now4real"];
-        const enabled = Boolean(section?.enabled);
-        const configured = Boolean(
-          section?.webhookAuthorization && section?.now4realApiKey,
-        );
+      resolveAccountId: ({ accountId }) => accountId?.trim() || "default",
+      applyAccountConfig: ({ cfg, accountId }) => {
+        const channels = (cfg.channels as Record<string, any> | undefined) ?? {};
+        const section = (channels["now4real"] as Record<string, any> | undefined) ?? {};
+
         return {
-          enabled: enabled,
-          configured: configured,
-          running: enabled && configured,
-          tokenStatus: configured ? "available" : "missing",
-        };
+          ...cfg,
+          channels: {
+            ...channels,
+            now4real: {
+              ...section,
+              enabled: true,
+              accountId: accountId || "default",
+            },
+          },
+        } as OpenClawConfig;
       },
     }
-  }),
+  },
 
   // Threading: how replies are delivered
   threading: { topLevelReplyToMode: "reply" },
@@ -144,6 +152,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
   // Outbound: send messages to the platform
   outbound: {
     attachedResults: {
+      channel: "now4real",
       sendText: async (params) => {
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
@@ -156,13 +165,12 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
             },
           ],
         });
-        return { messageId: result.id };
+        return { messageId: result.id ?? `now4real-${Date.now()}` };
       },
-    },
-    base: {
       sendMedia: async (params) => {
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
+        const mediaRef = String(params.mediaUrl ?? params.text ?? "media");
         // Now4real doesn't support direct media upload
         // Send as text link instead
         await now4realApi.sendMessage({
@@ -170,11 +178,15 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
           user,
           newMessages: [
             {
-              content: `[Media: ${params.filePath}]`,
+              content: `[Media: ${mediaRef}]`,
             },
           ],
         });
+        return { messageId: `now4real-${Date.now()}` };
       },
+    },
+    base: {
+      deliveryMode: "direct",
     },
   },
 });

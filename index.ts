@@ -123,7 +123,7 @@ export default defineChannelPluginEntry({
         const body = Buffer.concat(chunks).toString("utf-8");
 
         // Get account config
-        const account = now4realPlugin.setup!.resolveAccount(
+        const account = now4realPlugin.config.resolveAccount(
           api.config,
           undefined,
         );
