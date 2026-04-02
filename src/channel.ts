@@ -146,8 +146,8 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     }
   },
 
-  // Threading: how replies are delivered
-  threading: { topLevelReplyToMode: "reply" },
+  // Threading: read replyToMode from channels.now4real.replyToMode
+  threading: { topLevelReplyToMode: "now4real" },
 
   // Outbound: send messages to the platform
   outbound: {
@@ -156,12 +156,14 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       sendText: async (params) => {
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
+        const replyMessageId = String(params.replyToId ?? "").trim();
         const result = await now4realApi.sendMessage({
           context,
           user,
           newMessages: [
             {
               content: params.text,
+              ...(replyMessageId ? { replyMessageId } : {}),
             },
           ],
         });
@@ -171,6 +173,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
         const mediaRef = String(params.mediaUrl ?? params.text ?? "media");
+        const replyMessageId = String(params.replyToId ?? "").trim();
         // Now4real doesn't support direct media upload
         // Send as text link instead
         await now4realApi.sendMessage({
@@ -179,6 +182,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
           newMessages: [
             {
               content: `[Media: ${mediaRef}]`,
+              ...(replyMessageId ? { replyMessageId } : {}),
             },
           ],
         });

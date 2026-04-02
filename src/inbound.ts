@@ -48,21 +48,37 @@ export async function handleNow4realInbound(
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
   hooks?: InboundReplyLifecycleHooks,
-): Promise<unknown> {
+): Promise<void> {
   const site = String(event.context.site ?? "").trim();
   const page = String(event.context.page ?? "").trim();
   const channelContextId = `${site}${page}`;
   const sessionKey = `agent:main:now4real:channel:${channelContextId}`;
+  const currentMessageId = String(event.newMessage.id ?? "").trim();
+  const replyToMessageId = String(event.newMessage.replyMessageId ?? "").trim();
 
   // Construct context payload for OpenClaw
   const ctxPayload = {
     Body: event.newMessage.content,
     From: event.newMessage.user.id,
     To: channelContextId,
+    OriginatingChannel: "now4real",
+    OriginatingTo: channelContextId,
     SenderName: event.newMessage.user.displayName,
     SenderId: event.newMessage.user.id,
     SessionKey: sessionKey,
     AccountId: account.accountId ?? undefined,
+    ...(currentMessageId
+      ? {
+        MessageSid: currentMessageId,
+        MessageSidFull: currentMessageId,
+      }
+      : {}),
+    ...(replyToMessageId
+      ? {
+        ReplyToId: replyToMessageId,
+        ReplyToIdFull: replyToMessageId,
+      }
+      : {}),
     Timestamp: new Date(event.newMessage.time).getTime(),
     Provider: "now4real",
     InboundHistory: event.chat.messages.map((m) => ({
@@ -72,8 +88,8 @@ export async function handleNow4realInbound(
     })),
   };
 
-  // Dispatch message to OpenClaw
-  let finalReplyPayload: unknown;
+  // Dispatch message to OpenClaw.
+  // Reply delivery is routed by OpenClaw via channel outbound adapters.
   let didSignalReplyDone = false;
 
   const signalReplyDone = async () => {
@@ -87,11 +103,7 @@ export async function handleNow4realInbound(
     onIdle: () => {
       void signalReplyDone();
     },
-    deliver: async (payload: unknown, info: { kind: "tool" | "block" | "final" }) => {
-      if (info.kind === "final") {
-        finalReplyPayload = payload;
-      }
-    },
+    deliver: async (_payload: unknown, _info: { kind: "tool" | "block" | "final" }) => {},
   });
 
   try {
@@ -106,23 +118,4 @@ export async function handleNow4realInbound(
     markDispatchIdle();
     await signalReplyDone();
   }
-
-  if (!finalReplyPayload) return null;
-
-  const p = finalReplyPayload as any;
-  const content: string = p.text ?? p.content ?? p.body ?? "";
-  const displayIcon = account.openClawDisplayIcon?.trim();
-
-  return {
-    user: {
-      displayName: account.openClawDisplayName ?? "ChatBot",
-      ...(displayIcon ? { displayIcon } : {}),
-    },
-    newMessages: [
-      {
-        content,
-        replyMessageId: event.newMessage.id,
-      },
-    ],
-  };
 }

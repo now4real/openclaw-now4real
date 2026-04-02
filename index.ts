@@ -32,7 +32,7 @@ async function processInboundAsyncReply(
       ...(account.openClawDisplayIcon ? { displayIcon: account.openClawDisplayIcon } : {}),
     };
 
-    const finalReply = await handleNow4realInbound(config, event, account, {
+    await handleNow4realInbound(config, event, account, {
       onAgentReplyStart: async () => {
         try {
           await now4realApi.setTyping({
@@ -56,29 +56,6 @@ async function processInboundAsyncReply(
           console.error("Now4real typing off failed:", error);
         }
       },
-    });
-
-    const reply = finalReply as
-      | {
-          user?: { displayName?: string; displayIcon?: string };
-          newMessages?: Array<{ content?: string; replyMessageId?: string }>;
-        }
-      | null;
-    const firstContent = String(reply?.newMessages?.[0]?.content ?? "").trim();
-    if (!firstContent) return;
-
-    await now4realApi.sendMessage({
-      context,
-      user: {
-        displayName: String(reply?.user?.displayName ?? account.openClawDisplayName ?? "Chat Bot"),
-        ...(reply?.user?.displayIcon ? { displayIcon: reply.user.displayIcon } : {}),
-      },
-      newMessages: (reply?.newMessages ?? [])
-        .map((message) => ({
-          content: String(message?.content ?? "").trim(),
-          ...(message?.replyMessageId ? { replyMessageId: message.replyMessageId } : {}),
-        }))
-        .filter((message) => message.content.length > 0),
     });
   } catch (error) {
     console.error("Error handling async Now4real inbound:", error);
