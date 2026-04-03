@@ -1,12 +1,13 @@
 /**
  * Inbound webhook handler for Now4real
  */
-import type { ResolvedAccount } from "./channel.js";
+import { now4realPlugin, type ResolvedAccount } from "./channel.js";
 import {
   createReplyDispatcherWithTyping,
   dispatchInboundMessage,
   finalizeInboundContext,
 } from "openclaw/plugin-sdk/reply-runtime";
+import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-payload";
 
 export interface Now4realWebhookUser {
   id: string;
@@ -98,12 +99,54 @@ export async function handleNow4realInbound(
     await hooks?.onAgentReplyDone?.();
   };
 
+  const deliverOutboundReply = async (payload: { text?: string; mediaUrl?: string; mediaUrls?: string[]; replyToId?: string }) => {
+    const outbound = now4realPlugin.outbound;
+    if (!outbound?.sendText) {
+      throw new Error("now4real: outbound.sendText is not available");
+    }
+
+    const parts = resolveSendableOutboundReplyParts(payload);
+    if (!parts.hasContent) {
+      return;
+    }
+
+    if (parts.hasMedia) {
+      const sendMedia = outbound.sendMedia;
+      if (!sendMedia) {
+        throw new Error("now4real: outbound.sendMedia is not available");
+      }
+
+      for (let i = 0; i < parts.mediaUrls.length; i += 1) {
+        const mediaUrl = parts.mediaUrls[i];
+        await sendMedia({
+          cfg: config,
+          to: channelContextId,
+          text: i === 0 ? parts.text : "",
+          mediaUrl,
+          replyToId: payload.replyToId ?? undefined,
+          accountId: account.accountId ?? undefined,
+        });
+      }
+      return;
+    }
+
+    await outbound.sendText({
+      cfg: config,
+      to: channelContextId,
+      text: parts.text,
+      replyToId: payload.replyToId ?? undefined,
+      accountId: account.accountId ?? undefined,
+    });
+  };
+
   const { dispatcher, replyOptions, markDispatchIdle, markRunComplete } = createReplyDispatcherWithTyping({
     onReplyStart: () => hooks?.onAgentReplyStart?.(),
     onIdle: () => {
       void signalReplyDone();
     },
-    deliver: async (_payload: unknown, _info: { kind: "tool" | "block" | "final" }) => {},
+    deliver: async (payload) => {
+      await deliverOutboundReply(payload as { text?: string; mediaUrl?: string; mediaUrls?: string[]; replyToId?: string });
+    },
   });
 
   try {
