@@ -89,6 +89,8 @@ export async function handleNow4realInbound(
     })),
   };
 
+  console.log('Now4real inbound message received, context payload:', ctxPayload);
+
   // Dispatch message to OpenClaw.
   // Reply delivery is routed by OpenClaw via channel outbound adapters.
   let didSignalReplyDone = false;
