@@ -115,6 +115,9 @@ export default defineChannelPluginEntry({
 
         try {
           const event = parseWebhookPayload(body);
+
+          console.log("Now4real webhook event parsed:", event);
+
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
           res.end(JSON.stringify({}));
