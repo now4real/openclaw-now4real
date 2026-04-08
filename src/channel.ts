@@ -5,7 +5,10 @@ import {
   createChatChannelPlugin,
 } from "openclaw/plugin-sdk/core";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
+import { chunkMarkdownText } from "openclaw/plugin-sdk/reply-runtime";
 import { now4realApi, initClient } from "./client.js";
+
+const DEFAULT_NOW4REAL_MAX_MESSAGE_LENGTH = 1000;
 
 export type ResolvedAccount = {
   accountId: string | null;
@@ -159,15 +162,22 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
         const replyMessageId = String(params.replyToId ?? "").trim();
+        const chunks = chunkMarkdownText(
+          String(params.text ?? "").trim(),
+          DEFAULT_NOW4REAL_MAX_MESSAGE_LENGTH,
+        );
+
+        if (chunks.length === 0) {
+          return { messageId: `now4real-${Date.now()}` };
+        }
+
         const payload = {
           context,
           user,
-          newMessages: [
-            {
-              content: params.text,
-              ...(replyMessageId ? { replyMessageId } : {}),
-            },
-          ],
+          newMessages: chunks.map((content, index) => ({
+            content,
+            ...(index === 0 && replyMessageId ? { replyMessageId } : {}),
+          })),
         };
 
         let result;
@@ -187,17 +197,22 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         const context = resolveOutboundContext(params);
         const mediaRef = String(params.mediaUrl ?? params.text ?? "media");
         const replyMessageId = String(params.replyToId ?? "").trim();
+        const mediaText = `[Media: ${mediaRef}]`;
+        const chunks = chunkMarkdownText(mediaText, DEFAULT_NOW4REAL_MAX_MESSAGE_LENGTH);
+
+        if (chunks.length === 0) {
+          return { messageId: `now4real-${Date.now()}` };
+        }
+
         // Now4real doesn't support direct media upload
         // Send as text link instead
         const payload = {
           context,
           user,
-          newMessages: [
-            {
-              content: `[Media: ${mediaRef}]`,
-              ...(replyMessageId ? { replyMessageId } : {}),
-            },
-          ],
+          newMessages: chunks.map((content, index) => ({
+            content,
+            ...(index === 0 && replyMessageId ? { replyMessageId } : {}),
+          })),
         };
 
         let result;

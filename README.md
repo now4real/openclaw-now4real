@@ -44,6 +44,8 @@ Optional fields:
 - openClawDisplayName
 - openClawDisplayIcon
 
+When an outbound reply is longer than 1000 characters, the plugin automatically splits it into multiple `newMessages` entries, using OpenClaw native markdown-aware chunking.
+
 ## Webhook Setup
 
 1. Open Now4real dashboard -> Webhooks.
