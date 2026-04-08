@@ -159,7 +159,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
         const replyMessageId = String(params.replyToId ?? "").trim();
-        const result = await now4realApi.sendMessage({
+        const payload = {
           context,
           user,
           newMessages: [
@@ -168,7 +168,16 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
               ...(replyMessageId ? { replyMessageId } : {}),
             },
           ],
-        });
+        };
+
+        let result;
+        try {
+          result = await now4realApi.sendMessage(payload);
+        } catch (error) {
+          console.error("Now4real outbound sendText failed:", error);
+          throw error;
+        }
+
         return { messageId: result.id ?? `now4real-${Date.now()}` };
       },
       sendMedia: async (params) => {
@@ -180,7 +189,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         const replyMessageId = String(params.replyToId ?? "").trim();
         // Now4real doesn't support direct media upload
         // Send as text link instead
-        await now4realApi.sendMessage({
+        const payload = {
           context,
           user,
           newMessages: [
@@ -189,8 +198,17 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
               ...(replyMessageId ? { replyMessageId } : {}),
             },
           ],
-        });
-        return { messageId: `now4real-${Date.now()}` };
+        };
+
+        let result;
+        try {
+          result = await now4realApi.sendMessage(payload);
+        } catch (error) {
+          console.error("Now4real outbound sendMedia failed:", error);
+          throw error;
+        }
+
+        return { messageId: result.id ?? `now4real-${Date.now()}` };
       },
     },
     base: {

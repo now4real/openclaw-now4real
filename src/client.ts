@@ -38,7 +38,7 @@ export interface SetTypingResult {
 }
 
 class Now4realClient {
-  private baseUrl = "https://api.now4real.com/rest/v1";
+  private baseUrl = "https://integrator-api.staging.now4real.com/rest/v1";
   private authorization: string;
 
   constructor(authorization: string) {
@@ -49,6 +49,7 @@ class Now4realClient {
     path: string,
     options: RequestInit = {},
   ): Promise<T> {
+    const method = options.method ?? "GET";
     const response = await fetch(`${this.baseUrl}${path}`, {
       ...options,
       headers: {
@@ -59,7 +60,10 @@ class Now4realClient {
     });
 
     if (!response.ok) {
-      throw new Error(`Now4real API error: ${response.status}`);
+      const responseBody = await response.text().catch(() => "");
+      throw new Error(
+        `Now4real API error ${method} ${path}: ${response.status} ${response.statusText}${responseBody ? ` - ${responseBody}` : ""}`,
+      );
     }
 
     return response.json();
