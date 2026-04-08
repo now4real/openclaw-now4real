@@ -227,7 +227,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       },
     },
     base: {
-      deliveryMode: "direct",
+      deliveryMode: "gateway",
     },
   },
 });
