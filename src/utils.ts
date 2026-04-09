@@ -1,5 +1,8 @@
 import { timingSafeEqual } from "crypto";
 
+const KLIPY_GIF_URL_REGEX =
+  /^https:\/\/klipy\.com\/gifs\/(\d+)#f=[a-z0-9\/]+&webp=[A-Za-z0-9]+&jpeg=[A-Za-z0-9]+&gif=[A-Za-z0-9]+$/;
+
 /**
  * Compares two strings in constant time to prevent timing attacks.
  */
@@ -31,4 +34,10 @@ export function containsBotMention(content: string, botName: string): boolean {
 
   const mentionRegex = new RegExp(`(?:^|\\s)@\\s*${namePattern}(?=$|[\\s.,!?;:])`, "i");
   return mentionRegex.test(content);
+}
+
+export function extractKlipyGifId(content: string): string | null {
+  const normalizedContent = String(content ?? "").trim();
+  const match = KLIPY_GIF_URL_REGEX.exec(normalizedContent);
+  return match?.[1] ?? null;
 }

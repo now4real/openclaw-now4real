@@ -37,6 +37,10 @@
             "type": "boolean",
             "description": "If enabled, replies are generated only when incoming messages mention @<Bot Display Name>",
             "default": false
+          },
+          "klipyApiAuthorization": {
+            "type": "string",
+            "description": "Klipy app key used to resolve GIF metadata"
           }
         },
         "required": ["webhookAuthorization"]
@@ -65,6 +69,12 @@
         "requireMention": {
           "label": "Require Mention",
           "help": "When enabled, the bot replies only if the incoming message includes @<Bot Display Name>."
+        },
+        "klipyApiAuthorization": {
+          "label": "Klipy App Key",
+          "help": "App key used in Klipy API calls: /v2/posts?key=...&id=...",
+          "placeholder": "e.g. your-klipy-app-key",
+          "sensitive": true
         }
       }
     }

@@ -29,7 +29,8 @@ Add this to your OpenClaw config.
       "webhookAuthorization": "Bearer your-webhook-secret",
       "openClawDisplayName": "Support Bot",
       "openClawDisplayIcon": "https://example.com/bot-icon.png",
-      "requireMention": false
+      "requireMention": false,
+      "klipyApiAuthorization": "your-klipy-app-key"
     }
   }
 }
@@ -43,6 +44,20 @@ Optional fields:
 - openClawDisplayName
 - openClawDisplayIcon
 - requireMention (default: false)
+- klipyApiAuthorization (Klipy app key, optional)
+
+GIF metadata resolution is enabled only when `klipyApiAuthorization` is configured.
+If `klipyApiAuthorization` is empty or missing, Klipy GIF URLs are forwarded as-is and no metadata API call is performed.
+
+When an inbound message is a Klipy GIF URL in format `https://klipy.com/gifs/{id}#...`, the plugin extracts the GIF ID, calls `https://api.klipy.com/v2/posts?key={app_key}&id={id}`, reads `results[0].content_description`, and appends a structured GIF context to the message body forwarded to OpenClaw:
+
+```text
+[KLIPY_GIF_CONTEXT]
+gif_id=2525964843568523
+gif_description=...
+```
+
+If metadata cannot be fetched, `gif_description=description_not_available` is sent so the agent still knows it is a specific GIF.
 
 When `requireMention` is `true`, the plugin replies only if the incoming message contains a mention to the configured bot display name, for example `@Support Bot ciao`.
 
