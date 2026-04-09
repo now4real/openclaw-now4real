@@ -1,0 +1,1 @@
+export const DEFAULT_BOT_DISPLAY_NAME = "OpenClaw";

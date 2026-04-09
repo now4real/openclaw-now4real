@@ -7,6 +7,7 @@ import {
 import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 import { chunkMarkdownText } from "openclaw/plugin-sdk/reply-runtime";
 import { now4realApi, initClient } from "./client.js";
+import { DEFAULT_BOT_DISPLAY_NAME } from "./constants.js";
 
 const DEFAULT_NOW4REAL_MAX_MESSAGE_LENGTH = 1000;
 
@@ -16,6 +17,7 @@ export type ResolvedAccount = {
   now4realApiKey: string;
   openClawDisplayName: string | null;
   openClawDisplayIcon: string | null;
+  requireMention: boolean;
 };
 
 function resolveAccount(
@@ -42,6 +44,7 @@ function resolveAccount(
     now4realApiKey,
     openClawDisplayName: section?.openClawDisplayName ?? null,
     openClawDisplayIcon: section?.openClawDisplayIcon ?? null,
+    requireMention: section?.requireMention === true,
   };
 }
 
@@ -53,8 +56,8 @@ function resolveOutboundUser(params: any): { displayName: string; displayIcon?: 
     params?.account?.openClawDisplayName
       ?? params?.resolvedAccount?.openClawDisplayName
       ?? section?.openClawDisplayName
-      ?? "Chat Bot",
-  ).trim() || "Chat Bot";
+      ?? DEFAULT_BOT_DISPLAY_NAME,
+  ).trim() || DEFAULT_BOT_DISPLAY_NAME;
 
   const rawIcon =
     params?.account?.openClawDisplayIcon

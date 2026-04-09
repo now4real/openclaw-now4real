@@ -29,7 +29,8 @@ Add this to your OpenClaw config.
       "webhookAuthorization": "Bearer your-webhook-secret",
       "now4realApiKey": "Bearer your-now4real-api-key",
       "openClawDisplayName": "Support Bot",
-      "openClawDisplayIcon": "https://example.com/bot-icon.png"
+      "openClawDisplayIcon": "https://example.com/bot-icon.png",
+      "requireMention": false
     }
   }
 }
@@ -43,6 +44,9 @@ Optional fields:
 - enabled
 - openClawDisplayName
 - openClawDisplayIcon
+- requireMention (default: false)
+
+When `requireMention` is `true`, the plugin replies only if the incoming message contains a mention to the configured bot display name, for example `@Support Bot ciao`.
 
 When an outbound reply is longer than 1000 characters, the plugin automatically splits it into multiple `newMessages` entries, using OpenClaw native markdown-aware chunking.
 

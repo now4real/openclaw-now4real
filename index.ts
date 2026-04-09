@@ -4,12 +4,12 @@
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/core";
 import { now4realPlugin } from "./src/channel.js";
 import {
-  parseWebhookPayload,
   handleNow4realInbound,
   type Now4realWebhookEvent,
 } from "./src/inbound.js";
 import type { ResolvedAccount } from "./src/channel.js";
-import { timingSafeStringEqual } from "./src/utils.js";
+import { DEFAULT_BOT_DISPLAY_NAME } from "./src/constants.js";
+import { parseWebhookPayload, timingSafeStringEqual } from "./src/utils.js";
 import { now4realApi } from "./src/client.js";
 
 async function processInboundAsyncReply(
@@ -28,7 +28,7 @@ async function processInboundAsyncReply(
     }
 
     const typingUser = {
-      displayName: String(account.openClawDisplayName ?? "Chat Bot"),
+      displayName: String(account.openClawDisplayName ?? DEFAULT_BOT_DISPLAY_NAME),
       ...(account.openClawDisplayIcon ? { displayIcon: account.openClawDisplayIcon } : {}),
     };
 
@@ -114,7 +114,7 @@ export default defineChannelPluginEntry({
         }
 
         try {
-          const event = parseWebhookPayload(body);
+          const event = parseWebhookPayload<Now4realWebhookEvent>(body);
 
           console.log("Now4real webhook event parsed:", event);
 

@@ -8,6 +8,8 @@ import {
   finalizeInboundContext,
 } from "openclaw/plugin-sdk/reply-runtime";
 import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-payload";
+import { DEFAULT_BOT_DISPLAY_NAME } from "./constants.js";
+import { containsBotMention } from "./utils.js";
 
 export interface Now4realWebhookUser {
   id: string;
@@ -40,16 +42,24 @@ export type InboundReplyLifecycleHooks = {
   onAgentReplyDone?: () => void | Promise<void>;
 };
 
-export function parseWebhookPayload(body: string): Now4realWebhookEvent {
-  return JSON.parse(body) as Now4realWebhookEvent;
-}
-
 export async function handleNow4realInbound(
   config: any,
   event: Now4realWebhookEvent,
   account: ResolvedAccount,
   hooks?: InboundReplyLifecycleHooks,
 ): Promise<void> {
+  const inboundText = String(event.newMessage.content ?? "");
+  if (account.requireMention) {
+    const botName = String(account.openClawDisplayName ?? DEFAULT_BOT_DISPLAY_NAME).trim();
+    if (!containsBotMention(inboundText, botName)) {
+      console.log("Now4real inbound ignored: mention required", {
+        botName,
+        messageId: String(event.newMessage.id ?? "").trim(),
+      });
+      return;
+    }
+  }
+
   const site = String(event.context.site ?? "").trim();
   const page = String(event.context.page ?? "").trim();
   const channelContextId = `${site}${page}`;
@@ -59,7 +69,7 @@ export async function handleNow4realInbound(
 
   // Construct context payload for OpenClaw
   const ctxPayload = {
-    Body: event.newMessage.content,
+    Body: inboundText,
     From: event.newMessage.user.id,
     To: channelContextId,
     OriginatingChannel: "now4real",

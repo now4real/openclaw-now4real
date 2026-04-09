@@ -36,6 +36,11 @@
           "openClawDisplayIcon": {
             "type": "string",
             "description": "URL of the icon shown for the bot when replying"
+          },
+          "requireMention": {
+            "type": "boolean",
+            "description": "If enabled, replies are generated only when incoming messages mention @<Bot Display Name>",
+            "default": false
           }
         },
         "required": ["webhookAuthorization", "now4realApiKey"]
@@ -66,6 +71,10 @@
           "label": "Bot Display Icon",
           "help": "URL of the avatar image shown for the bot when it replies in the chat.",
           "placeholder": "e.g. https://example.com/bot-icon.png"
+        },
+        "requireMention": {
+          "label": "Require Mention",
+          "help": "When enabled, the bot replies only if the incoming message includes @<Bot Display Name>."
         }
       }
     }
