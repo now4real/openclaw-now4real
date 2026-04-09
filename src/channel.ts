@@ -14,7 +14,6 @@ const DEFAULT_NOW4REAL_MAX_MESSAGE_LENGTH = 1000;
 export type ResolvedAccount = {
   accountId: string | null;
   webhookAuthorization: string;
-  now4realApiKey: string;
   openClawDisplayName: string | null;
   openClawDisplayIcon: string | null;
   requireMention: boolean;
@@ -27,21 +26,16 @@ function resolveAccount(
   const section = (cfg.channels as Record<string, any>)?.["now4real"];
   const enabled = section?.enabled;
   const webhookAuthorization = section?.webhookAuthorization;
-  const now4realApiKey = section?.now4realApiKey;
 
   if (!enabled) throw new Error("now4real channel disabled");
   if (!webhookAuthorization) throw new Error("now4real: webhookAuthorization is required");
-  if (!now4realApiKey) {
-    throw new Error("now4real: now4realApiKey is required");
-  }
 
   // Initialize client
-  initClient(now4realApiKey);
+  initClient(webhookAuthorization);
 
   return {
     accountId: accountId ?? null,
     webhookAuthorization,
-    now4realApiKey,
     openClawDisplayName: section?.openClawDisplayName ?? null,
     openClawDisplayIcon: section?.openClawDisplayIcon ?? null,
     requireMention: section?.requireMention === true,
@@ -120,9 +114,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
       inspectAccount(cfg: OpenClawConfig, _accountId?: string | null) {
         const section = (cfg.channels as Record<string, any>)?.["now4real"];
         const enabled = Boolean(section?.enabled);
-        const configured = Boolean(
-          section?.webhookAuthorization && section?.now4realApiKey,
-        );
+        const configured = Boolean(section?.webhookAuthorization);
         return {
           enabled: enabled,
           configured: configured,

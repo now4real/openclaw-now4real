@@ -27,7 +27,6 @@ Add this to your OpenClaw config.
     "now4real": {
       "enabled": true,
       "webhookAuthorization": "Bearer your-webhook-secret",
-      "now4realApiKey": "Bearer your-now4real-api-key",
       "openClawDisplayName": "Support Bot",
       "openClawDisplayIcon": "https://example.com/bot-icon.png",
       "requireMention": false
@@ -38,7 +37,6 @@ Add this to your OpenClaw config.
 
 Required fields:
 - webhookAuthorization
-- now4realApiKey
 
 Optional fields:
 - enabled
