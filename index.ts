@@ -64,25 +64,6 @@ export default defineChannelPluginEntry({
   description: "Connect OpenClaw to Now4real pagechat",
   plugin: now4realPlugin,
 
-  registerCliMetadata(api) {
-    api.registerCli(
-      ({ program }) => {
-        program
-          .command("now4real")
-          .description("Now4real channel management");
-      },
-      {
-        descriptors: [
-          {
-            name: "now4real",
-            description: "Now4real channel management",
-            hasSubcommands: false,
-          },
-        ],
-      },
-    );
-  },
-
   registerFull(api) {
     // Register webhook endpoint
     api.registerHttpRoute({
