@@ -52,6 +52,14 @@ When `requireMention` is true, the plugin replies only if:
 
 When an outbound reply is longer than 1000 characters, the plugin automatically splits it into multiple messages using OpenClaw native markdown-aware chunking.
 
+## Environment Variables
+
+The plugin supports this environment variable:
+
+- `OPENCLAW_NOW4REAL_API_URL` (optional)
+  - Override URL for Now4real API calls.
+  - Default: `https://integrator-api.now4real.com`
+
 ## Now4real Dashboard Setup
 
 Configure the chatbot for your site in the Now4real Dashboard: https://dashboard.now4real.com
