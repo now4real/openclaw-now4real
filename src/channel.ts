@@ -151,7 +151,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
     attachedResults: {
       channel: "now4real",
       sendText: async (params) => {
-        console.log("Now4real outbound sendText params:", params);
+        //console.log("Now4real outbound sendText params:", params);
 
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);
@@ -185,7 +185,7 @@ export const now4realPlugin = createChatChannelPlugin<ResolvedAccount>({
         return { messageId: result.id ?? `now4real-${Date.now()}` };
       },
       sendMedia: async (params) => {
-        console.log("Now4real outbound sendMedia params:", params);
+        //console.log("Now4real outbound sendMedia params:", params);
 
         const user = resolveOutboundUser(params);
         const context = resolveOutboundContext(params);

@@ -43,8 +43,6 @@ export type InboundReplyLifecycleHooks = {
 };
 
 function isReplyToChatbotMessage(event: Now4realWebhookEvent): boolean {
-  console.log('isReplyToChatbotMessage check, event:', event, event.newMessage, JSON.stringify(event.chat.messages));  
-
   const replyToMessageId = String(event.newMessage.replyMessageId ?? "").trim();
   if (!replyToMessageId) {
     return false;
@@ -64,7 +62,7 @@ export async function handleNow4realInbound(
   account: ResolvedAccount,
   hooks?: InboundReplyLifecycleHooks,
 ): Promise<void> {
-  console.log("Now4real inbound event received:", { event });
+  //console.log("Now4real inbound event received:", { event });
 
   const inboundText = String(event.newMessage.content ?? "");
   const configuredBotName = String(account.openClawDisplayName ?? "").trim();
@@ -74,21 +72,21 @@ export async function handleNow4realInbound(
   
   if (account.requireMention) {
     if (!hasMention && !replyingToChatbot) {
-      console.log("Now4real inbound ignored: mention required", {
+      /* console.log("Now4real inbound ignored: mention required", {
         botName,
         messageId: String(event.newMessage.id ?? "").trim(),
-      });
+      }); */
       return;
     }
   }
 
   const isReply = String(event.newMessage.replyMessageId ?? "").trim().length > 0;
   if (!account.requireMention && isReply && !replyingToChatbot && !hasMention) {
-    console.log("Now4real inbound ignored: user reply without mention", {
+    /* console.log("Now4real inbound ignored: user reply without mention", {
       botName,
       messageId: String(event.newMessage.id ?? "").trim(),
       replyMessageId: String(event.newMessage.replyMessageId ?? "").trim(),
-    });
+    }); */
     return;
   }
 
@@ -149,8 +147,6 @@ export async function handleNow4realInbound(
       timestamp: new Date(m.time).getTime(),
     })),
   };
-
-  console.log('Now4real inbound message received, context payload:', ctxPayload);
 
   // Dispatch message to OpenClaw.
   // Reply delivery is routed by OpenClaw via channel outbound adapters.
