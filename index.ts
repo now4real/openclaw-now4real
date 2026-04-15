@@ -84,19 +84,27 @@ export default defineChannelPluginEntry({
   },
 
   registerFull(api) {
-    const section = (api.config?.channels as Record<string, any> | undefined)?.["now4real"];
-    const enabled = section?.enabled === true;
-    const configured = Boolean(String(section?.webhookAuthorization ?? "").trim());
-
-    if (!enabled || !configured) {
-      return;
-    }
-
     // Register webhook endpoint
     api.registerHttpRoute({
       path: "/now4real/webhook",
       auth: "plugin", // We verify signatures ourselves
       handler: async (req, res) => {
+        const section = (api.config?.channels as Record<string, any> | undefined)?.["now4real"];
+        const enabled = section?.enabled === true;
+        const configured = Boolean(String(section?.webhookAuthorization ?? "").trim());
+
+        if (!enabled) {
+          res.statusCode = 503;
+          res.end("Now4real channel is disabled");
+          return true;
+        }
+
+        if (!configured) {
+          res.statusCode = 503;
+          res.end("Now4real channel is not configured");
+          return true;
+        }
+
         const chunks: Buffer[] = [];
         for await (const chunk of req) {
           chunks.push(chunk);
