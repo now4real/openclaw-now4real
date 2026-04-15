@@ -38,12 +38,33 @@ export interface Now4realSetTypingBody {
 export interface SetTypingResult {
 }
 
+export interface Now4realClientOptions {
+  baseOrigin?: string;
+}
+
+const NOW4REAL_DEFAULT_ORIGIN = "https://integrator-api.now4real.com";
+const NOW4REAL_API_BASE_PATH = "/rest/v1";
+
+function resolveApiOrigin(baseOrigin?: string): string {
+  const raw = String(baseOrigin ?? "").trim();
+  if (!raw) {
+    return NOW4REAL_DEFAULT_ORIGIN;
+  }
+
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return NOW4REAL_DEFAULT_ORIGIN;
+  }
+}
+
 class Now4realClient {
-  private baseUrl = "https://integrator-api.now4real.com/rest/v1";
+  private baseUrl: string;
   private authorization: string;
 
-  constructor(authorization: string) {
+  constructor(authorization: string, options: Now4realClientOptions = {}) {
     this.authorization = authorization;
+    this.baseUrl = `${resolveApiOrigin(options.baseOrigin)}${NOW4REAL_API_BASE_PATH}`;
   }
 
   private async request<T>(
@@ -51,6 +72,7 @@ class Now4realClient {
     options: RequestInit = {},
   ): Promise<T> {
     const method = options.method ?? "GET";
+
     const response = await fetch(`${this.baseUrl}${path}`, {
       ...options,
       headers: {
@@ -71,7 +93,7 @@ class Now4realClient {
   }
 
   async sendMessage(payload: Now4realSendMessageBody): Promise<SendMessageResult> {
-    console.log("Now4real sendMessage:", payload);
+    //console.log("Now4real sendMessage:", payload);
 
     return this.request<SendMessageResult>("/chatbot/message", {
       method: "PUT",
@@ -80,7 +102,7 @@ class Now4realClient {
   }
 
   async setTyping(payload: Now4realSetTypingBody): Promise<SetTypingResult> {
-    console.log("Now4real setTyping:", payload);
+    //console.log("Now4real setTyping:", payload);
 
     return this.request<SetTypingResult>("/chatbot/typing", {
       method: "POST",
@@ -92,8 +114,11 @@ class Now4realClient {
 
 let clientInstance: Now4realClient | null = null;
 
-export function initClient(authorization: string): Now4realClient {
-  clientInstance = new Now4realClient(authorization);
+export function initClient(
+  authorization: string,
+  options: Now4realClientOptions = {},
+): Now4realClient {
+  clientInstance = new Now4realClient(authorization, options);
   return clientInstance;
 }
 

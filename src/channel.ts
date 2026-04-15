@@ -25,10 +25,13 @@ function resolveAccount(
 ): ResolvedAccount {
   const section = (cfg.channels as Record<string, any>)?.["now4real"];
   const webhookAuthorization = String(section?.webhookAuthorization ?? "").trim();
+  const apiOriginFromEnv = String(process.env.OPENCLAW_NOW4REAL_API_URL ?? "").trim();
 
   // Initialize client only when an authorization token is configured.
   if (webhookAuthorization) {
-    initClient(webhookAuthorization);
+    initClient(webhookAuthorization, {
+      baseOrigin: apiOriginFromEnv || undefined,
+    });
   }
 
   return {
