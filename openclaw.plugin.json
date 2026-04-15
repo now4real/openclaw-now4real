@@ -1,0 +1,71 @@
+{
+  "id": "now4real",
+  "name": "Now4real",
+  "description": "Connect OpenClaw to Now4real pagechat via webhooks",
+  "version": "0.1.0",
+  "kind": "channel",
+  "channels": ["now4real"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  },
+  "channelConfigs": {
+    "now4real": {
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable or disable the Now4real channel"
+          },
+          "webhookAuthorization": {
+            "type": "string",
+            "description": "Webhook authorization secret for verification"
+          },
+          "openClawDisplayName": {
+            "type": "string",
+            "description": "Display name shown for the bot when replying"
+          },
+          "openClawDisplayIcon": {
+            "type": "string",
+            "description": "URL of the icon shown for the bot when replying"
+          },
+          "requireMention": {
+            "type": "boolean",
+            "description": "If enabled, replies are generated only when incoming messages mention @<Bot Display Name>, except when the message is a reply to a chatbot message",
+            "default": false
+          }
+        },
+        "required": ["enabled", "webhookAuthorization"]
+      },
+      "uiHints": {
+        "enabled": {
+          "label": "Enabled",
+          "help": "Turn the Now4real channel on or off."
+        },
+        "webhookAuthorization": {
+          "label": "Webhook Authorization",
+          "help": "Specify the value for the HTTP \"Authorization\" header. It is used to authenticate requests sent from the Now4real cloud to your webhook and outbound API calls from OpenClaw to Now4real.",
+          "placeholder": "e.g. Bearer your-token-here",
+          "sensitive": true
+        },
+        "openClawDisplayName": {
+          "label": "Bot Display Name",
+          "help": "The name shown for the bot when it replies in the chat.",
+          "placeholder": "e.g. Support Bot"
+        },
+        "openClawDisplayIcon": {
+          "label": "Bot Display Icon",
+          "help": "URL of the avatar image shown for the bot when it replies in the chat.",
+          "placeholder": "e.g. https://example.com/bot-icon.png"
+        },
+        "requireMention": {
+          "label": "Require Mention",
+          "help": "When enabled, the bot replies only if the incoming message includes @<Bot Display Name>, except when it is replying to a chatbot message."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "openclaw-now4real",
+  "description": "Open-source Now4real channel plugin for OpenClaw",
+  "version": "0.1.0",
+  "type": "module",
+  "author": "Now4real <support@now4real.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/now4real/openclaw-now4real"
+  },
+  "keywords": [
+    "openclaw",
+    "now4real",
+    "plugin",
+    "channel",
+    "chat",
+    "social",
+    "free"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ],
+    "setupEntry": "./setup-entry.ts",
+    "channel": {
+      "id": "now4real",
+      "label": "Now4real",
+      "blurb": "Connect OpenClaw to Now4real pagechat."
+    },
+    "compat": {
+      "pluginApi": ">=2026.4.11",
+      "minGatewayVersion": "2026.4.11"
+    },
+    "build": {
+      "openclawVersion": "2026.4.11",
+      "pluginSdkVersion": "2026.4.11"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.0.0"
+  }
+}
