@@ -11,12 +11,21 @@
   },
   "keywords": [
     "openclaw",
+    "openclaw-plugin",
     "now4real",
-    "plugin",
-    "channel",
+    "live-chat",
     "chat",
-    "social",
-    "free"
+    "website-chat",
+    "group-chat",
+    "chat-box",
+    "web-chat",
+    "html-chat",
+    "multiplayer-chat",
+    "collaborative-chat",
+    "embeddable-chat",
+    "pagechat",
+    "chat-widget",
+    "chatbot"
   ],
   "openclaw": {
     "extensions": [
