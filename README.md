@@ -28,15 +28,15 @@ The chat lives **on your site**, in a widget that looks and feels native to your
 A visitor types a message in the Now4real widget on your page, and OpenClaw replies as a named bot:
 
 <picture>
-  <source srcset="doc/img/chat.png" type="image/png">
-  <img src="doc/img/chat.png" alt="OpenClaw replying in the Now4real chat widget" width="300">
+  <source srcset="https://raw.githubusercontent.com/now4real/openclaw-now4real/main/doc/img/chat.png" type="image/png">
+  <img src="https://raw.githubusercontent.com/now4real/openclaw-now4real/main/doc/img/chat.png" alt="OpenClaw replying in the Now4real chat widget" width="300">
 </picture>
 
 The channel is configured and monitored from the OpenClaw dashboard:
 
 <picture>
-  <source srcset="doc/img/openclaw-channel.png" type="image/png">
-  <img src="doc/img/openclaw-channel.png" alt="Now4real channel panel in OpenClaw" width="300">
+  <source srcset="https://raw.githubusercontent.com/now4real/openclaw-now4real/main/doc/img/openclaw-channel.png" type="image/png">
+  <img src="https://raw.githubusercontent.com/now4real/openclaw-now4real/main/doc/img/openclaw-channel.png" alt="Now4real channel panel in OpenClaw" width="300">
 </picture>
 
 ## Install

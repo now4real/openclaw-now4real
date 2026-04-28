@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.3 - 2026-04-28
+Updated README.md image references to use absolute HTTPS GitHub URLs.
+
 ## 0.1.2 - 2026-04-16
 Improved README.md documentation.
 
