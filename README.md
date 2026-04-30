@@ -144,7 +144,7 @@ Open that URL in your browser, the Now4real chat bubble should appear.
 Once your page is live, open the Now4real Dashboard at https://dashboard.now4real.com and complete the chatbot setup:
 
 1. Add your site's URL (e.g. `https://<your-username>.github.io`) if it is not already listed.
-2. Open **Site Settings → Chatbots**.
+2. Open **Site Settings → Bots and AI agents**.
 3. Enable the chatbot activation toggle.
 4. Set **Webhook endpoint** to:
    `https://your-openclaw-server.example.com/now4real/webhook`
