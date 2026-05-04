@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 - 2026-05-04
+Updated README.md image references to use absolute HTTPS GitHub URLs.
+Refined README.md installation instructions, including the required build step.
+Verified compatibility with OpenClaw 2026.5.3.
+
 ## 0.1.2 - 2026-04-16
 Improved README.md documentation.
 

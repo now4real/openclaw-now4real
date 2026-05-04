@@ -51,7 +51,10 @@ Or from GitHub:
 
 ```bash
 git clone https://github.com/now4real/openclaw-now4real.git
-openclaw plugins install openclaw-now4real
+cd openclaw-now4real
+npm install
+npm run build
+openclaw plugins install .
 ```
 
 ## Configure
@@ -65,7 +68,7 @@ Add this to your OpenClaw config:
       "enabled": true,
       "webhookAuthorization": "your-webhook-secret",
       "openClawDisplayName": "OpenClaw",
-      "openClawDisplayIcon": "https://raw.githubusercontent.com/openclaw/openclaw/refs/heads/main/assets/chrome-extension/icons/icon48.png",
+      "openClawDisplayIcon": "https://raw.githubusercontent.com/now4real/openclaw-now4real/main/doc/img/pixel-lobster.webp",
       "requireMention": false
     }
   }
@@ -176,6 +179,6 @@ After publishing, your chatbot is live and incoming messages are forwarded to th
 
 ## Requirements
 
-- OpenClaw 2026.4.11+
+- OpenClaw 2026.5.3+
 - OpenClaw must expose a public HTTPS URL and respond on /now4real/webhook
 - A configured Now4real site with chatbot/webhook access
