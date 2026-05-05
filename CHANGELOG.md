@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 - 2026-05-05
+Updated package and plugin descriptions.
+
 ## 0.2.0 - 2026-05-04
 Updated README.md image references to use absolute HTTPS GitHub URLs.
 Refined README.md installation instructions, including the required build step.
