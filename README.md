@@ -2,6 +2,8 @@
 
 Open-source Now4real channel plugin for OpenClaw. It connects Now4real pagechats to OpenClaw through inbound webhooks and outbound chatbot APIs, with mention-aware replies and markdown-safe message chunking.
 
+[![Watch the video](https://markdown-videos-api.jorgenkh.no/youtube/sOPUdhvYWYQ)](https://www.youtube.com/watch?v=sOPUdhvYWYQ)
+
 ## Overview
 
 ### What is Now4real?
