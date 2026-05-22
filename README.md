@@ -25,6 +25,18 @@ This is particularly useful in scenarios like:
 
 The chat lives **on your site**, in a widget that looks and feels native to your brand. Visitors never leave your page to interact with the assistant.
 
+### Pair site chat with X/Twitter workflows
+
+Now4real brings OpenClaw into public website chats. If the same agent also needs structured X/Twitter automation, install [TweetClaw](https://github.com/Xquik-dev/tweetclaw) beside this channel plugin:
+
+```bash
+openclaw plugins install @xquik/tweetclaw
+```
+
+Use this channel for website visitor messages, page context, inbound webhooks, and chatbot replies. Use TweetClaw for search tweets, search tweet replies, scrape tweets, post tweets or replies after approval, export followers, look up users, upload media, download media, send direct messages, monitor tweets, create webhooks, and run giveaway draws.
+
+Keep the Now4real webhook authorization secret in `channels.now4real.webhookAuthorization`, and keep TweetClaw's Xquik API key or MPP signing key in TweetClaw plugin config or environment storage.
+
 ### How it looks
 
 A visitor types a message in the Now4real widget on your page, and OpenClaw replies as a named bot:
